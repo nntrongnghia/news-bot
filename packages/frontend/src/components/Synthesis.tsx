@@ -13,7 +13,7 @@ function Section({ title, items }: { title: string; items: string[] }) {
       </h3>
       <ul className="space-y-1">
         {items.map((item, i) => (
-          <li key={i} className="text-gray-300 text-sm pl-4 border-l-2 border-gray-700">
+          <li key={i} className="text-gray-700 dark:text-gray-300 text-sm pl-4 border-l-2 border-gray-300 dark:border-gray-700">
             {item}
           </li>
         ))}
@@ -34,7 +34,7 @@ export default function Synthesis({ synthesis }: Props) {
           <h3 className="text-sm font-semibold text-amber-400 uppercase tracking-wide mb-2">
             Triển Vọng
           </h3>
-          <p className="text-gray-300 text-sm">{synthesis.outlook}</p>
+          <p className="text-gray-700 dark:text-gray-300 text-sm">{synthesis.outlook}</p>
         </div>
       )}
     </div>

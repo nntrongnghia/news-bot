@@ -20,10 +20,10 @@ export default function Layout({ children }: { children: ReactNode }) {
         <div className="mx-auto max-w-6xl px-6 lg:px-8 py-4 flex items-center justify-between">
           <div>
             <Link to="/" className="text-2xl font-serif font-bold tracking-[-0.01em] text-neutral-800 dark:text-neutral-200">
-              Energy News Bot
+              Tin tức xăng dầu
             </Link>
             <p className="text-[11px] uppercase tracking-[0.1em] text-neutral-500 dark:text-neutral-400 mt-0.5">
-              Phân Tích Thị Trường Năng Lượng Bằng AI
+              Tổng hợp tin tức, phân tích thị trường xăng dầu Việt Nam và thế giới
             </p>
           </div>
           <div className="flex items-center gap-4">

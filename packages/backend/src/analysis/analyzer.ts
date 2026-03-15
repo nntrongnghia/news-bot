@@ -34,6 +34,7 @@ export interface VietnamMarket {
 }
 
 export interface Synthesis {
+  title: string;
   keyDevelopments: string[];
   priceDrivers: string[];
   supplyDemandSignals: string[];
@@ -124,6 +125,7 @@ QUAN TRỌNG: Mỗi điểm trong keyDevelopments, priceDrivers, supplyDemandSig
 
 Trả lời bằng JSON đúng cấu trúc sau:
 {
+  "title": "...",
   "keyDevelopments": ["..."],
   "priceDrivers": ["..."],
   "supplyDemandSignals": ["..."],
@@ -147,6 +149,7 @@ Trả lời bằng JSON đúng cấu trúc sau:
 }
 
 Hướng dẫn từng mục:
+- title: Tiêu đề báo cáo ngắn gọn 10-15 từ bằng tiếng Việt, kiểu tiêu đề báo chí, tóm tắt diễn biến thị trường quan trọng nhất. VD: "Giá dầu Brent vượt $85 sau quyết định cắt giảm sản lượng của OPEC+"
 - keyDevelopments: 3-5 sự kiện quan trọng nhất, mỗi điểm 2-3 câu với số liệu cụ thể và nguồn tham chiếu (VD: "OPEC+ quyết định cắt giảm 1.2 triệu thùng/ngày từ tháng 4, theo tuyên bố của Tổng thư ký Haitham Al Ghais ngày 15/3 (Reuters). Quyết định này vượt kỳ vọng thị trường và đẩy giá Brent tăng 3.2%."). Bắt đầu bằng hành động cụ thể.
 - priceDrivers: Yếu tố đang đẩy giá lên (↑) hoặc xuống (↓), nêu rõ hướng tác động. Phân biệt yếu tố ngắn hạn vs cấu trúc. Trích dẫn biến động giá cụ thể (VD: "Brent +2.1% lên $82.4/thùng").
 - supplyDemandSignals: Bao gồm cả tín hiệu thị trường vật chất (physical) và thị trường giấy (paper/derivatives) nếu có. Kèm số liệu cụ thể.
@@ -183,6 +186,7 @@ Hướng dẫn từng mục:
   }
 
   const defaultSynthesis: Synthesis = {
+    title: '',
     keyDevelopments: [],
     priceDrivers: [],
     supplyDemandSignals: [],

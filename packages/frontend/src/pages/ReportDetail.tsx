@@ -92,7 +92,7 @@ export default function ReportDetail() {
           &larr; Quay lại
         </Link>
         <h1 className="font-serif text-3xl font-bold tracking-[-0.01em] text-neutral-800 dark:text-neutral-200 mt-2">
-          {report.reportKey}
+          {report.synthesis?.title || report.reportKey}
         </h1>
         <p className="text-[13px] text-neutral-500 dark:text-neutral-400 mt-1">
           {format(new Date(report.generatedAt), 'MMMM d, yyyy h:mm a')}

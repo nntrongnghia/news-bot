@@ -27,6 +27,7 @@ export interface VietnamMarket {
 }
 
 export interface Synthesis {
+  title?: string;
   keyDevelopments: string[];
   priceDrivers: string[];
   supplyDemandSignals: string[];

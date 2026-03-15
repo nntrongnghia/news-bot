@@ -21,7 +21,7 @@ export default function ReportCard({ report }: Props) {
       )}
 
       <p className="text-[13px] text-neutral-500 dark:text-neutral-400">
-        {report.reportKey}
+        {synthesis?.title || report.reportKey}
         <span className="mx-1.5">&middot;</span>
         {format(new Date(report.generatedAt), 'MMM d, h:mm a')}
         <span className="mx-1.5">&middot;</span>

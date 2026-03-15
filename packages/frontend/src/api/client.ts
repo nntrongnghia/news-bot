@@ -11,12 +11,21 @@ export interface Article {
   summary: string | null;
 }
 
+export interface PricePrediction {
+  shortTerm: string;
+  mediumTerm: string;
+  keyLevels: string;
+}
+
 export interface Synthesis {
   keyDevelopments: string[];
   priceDrivers: string[];
   supplyDemandSignals: string[];
   geopoliticalFactors: string[];
   outlook: string;
+  expertAnalysis?: string;
+  predictions?: PricePrediction;
+  riskAssessment?: string[];
 }
 
 export interface Report {

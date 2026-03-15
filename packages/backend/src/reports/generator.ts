@@ -42,6 +42,9 @@ export async function runPipeline(): Promise<GeneratedReport> {
           supplyDemandSignals: [],
           geopoliticalFactors: [],
           outlook: 'No new articles found in this period.',
+          expertAnalysis: '',
+          predictions: { shortTerm: '', mediumTerm: '', keyLevels: '' },
+          riskAssessment: [],
         },
       },
     });

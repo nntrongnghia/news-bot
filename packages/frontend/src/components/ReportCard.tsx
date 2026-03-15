@@ -31,6 +31,12 @@ export default function ReportCard({ report }: Props) {
         <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-3">{synthesis.outlook}</p>
       )}
 
+      {synthesis?.expertAnalysis && (
+        <p className="text-sm text-gray-500 dark:text-gray-400 italic line-clamp-2 mt-2">
+          {synthesis.expertAnalysis}
+        </p>
+      )}
+
       {synthesis?.keyDevelopments && synthesis.keyDevelopments.length > 0 && (
         <div className="mt-3">
           <p className="text-xs text-amber-400 font-semibold mb-1">Diễn Biến Nổi Bật</p>

@@ -2,11 +2,13 @@ import { useState, useEffect } from 'react';
 import { fetchTodaysReports, fetchLatestReport, type Report } from '../api/client';
 import ReportCard from '../components/ReportCard';
 import Synthesis from '../components/Synthesis';
+import ErrorBoundary from '../components/ErrorBoundary';
 
 export default function Dashboard() {
   const [reports, setReports] = useState<Report[]>([]);
   const [latest, setLatest] = useState<Report | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function load() {
@@ -19,6 +21,7 @@ export default function Dashboard() {
         setLatest(latestReport);
       } catch (err) {
         console.error('Failed to load reports:', err);
+        setError(err instanceof Error ? err.message : 'Lỗi khi tải báo cáo');
       } finally {
         setLoading(false);
       }
@@ -34,6 +37,14 @@ export default function Dashboard() {
     );
   }
 
+  if (error) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-red-500 dark:text-red-400">{error}</p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8">
       {/* Latest synthesis */}
@@ -43,7 +54,9 @@ export default function Dashboard() {
             Tin Tức Thị Trường Mới Nhất
           </h2>
           <div className="border border-gray-200 dark:border-gray-800 rounded-lg p-6 bg-gray-100 dark:bg-gray-900/50">
-            <Synthesis synthesis={latest.synthesis} />
+            <ErrorBoundary>
+              <Synthesis synthesis={latest.synthesis} />
+            </ErrorBoundary>
           </div>
         </section>
       )}

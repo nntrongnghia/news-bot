@@ -45,6 +45,14 @@ export async function runPipeline(): Promise<GeneratedReport> {
           expertAnalysis: '',
           predictions: { shortTerm: '', mediumTerm: '', keyLevels: '' },
           riskAssessment: [],
+          vietnamMarket: {
+            domesticPolicy: [],
+            pvnOperations: [],
+            electricitySupplyDemand: '',
+            coalImports: '',
+            lngProjects: '',
+            renewableTransition: '',
+          },
         },
       },
     });

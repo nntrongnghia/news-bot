@@ -17,6 +17,15 @@ export interface PricePrediction {
   keyLevels: string;
 }
 
+export interface VietnamMarket {
+  domesticPolicy: string[];
+  pvnOperations: string[];
+  electricitySupplyDemand: string;
+  coalImports: string;
+  lngProjects: string;
+  renewableTransition: string;
+}
+
 export interface Synthesis {
   keyDevelopments: string[];
   priceDrivers: string[];
@@ -26,6 +35,7 @@ export interface Synthesis {
   expertAnalysis?: string;
   predictions?: PricePrediction;
   riskAssessment?: string[];
+  vietnamMarket?: VietnamMarket;
 }
 
 export interface Report {

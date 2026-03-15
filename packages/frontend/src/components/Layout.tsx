@@ -15,24 +15,24 @@ export default function Layout({ children }: { children: ReactNode }) {
   const { theme, toggleTheme } = useTheme();
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 font-sans">
-      <header className="border-b-2 border-gray-900 dark:border-gray-100">
+    <div className="min-h-screen bg-stone-50 dark:bg-[#141414] text-neutral-800 dark:text-neutral-200 font-sans">
+      <header className="border-b-2 border-neutral-800 dark:border-neutral-200">
         <div className="mx-auto max-w-6xl px-6 lg:px-8 py-4 flex items-center justify-between">
           <div>
-            <Link to="/" className="text-3xl font-serif font-bold text-gray-900 dark:text-gray-100">
+            <Link to="/" className="text-2xl font-serif font-bold tracking-[-0.01em] text-neutral-800 dark:text-neutral-200">
               Energy News Bot
             </Link>
-            <p className="text-xs uppercase tracking-[0.15em] text-gray-500 dark:text-gray-400 mt-0.5">
+            <p className="text-[11px] uppercase tracking-[0.1em] text-neutral-500 dark:text-neutral-400 mt-0.5">
               Phân Tích Thị Trường Năng Lượng Bằng AI
             </p>
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-400 hidden sm:block">
+            <span className="text-[13px] text-neutral-500 dark:text-neutral-400 hidden sm:block">
               {formatDate()}
             </span>
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              className="p-2 rounded-lg text-neutral-500 dark:text-neutral-400 hover:bg-stone-100 dark:hover:bg-neutral-900 transition-colors"
               aria-label="Toggle theme"
             >
               {theme === 'dark' ? (

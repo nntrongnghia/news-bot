@@ -24,6 +24,15 @@ export interface PricePrediction {
   keyLevels: string;
 }
 
+export interface VietnamMarket {
+  domesticPolicy: string[];
+  pvnOperations: string[];
+  electricitySupplyDemand: string;
+  coalImports: string;
+  lngProjects: string;
+  renewableTransition: string;
+}
+
 export interface Synthesis {
   keyDevelopments: string[];
   priceDrivers: string[];
@@ -33,6 +42,7 @@ export interface Synthesis {
   expertAnalysis: string;
   predictions: PricePrediction;
   riskAssessment: string[];
+  vietnamMarket?: VietnamMarket;
 }
 
 export async function summarizeArticles(
@@ -63,6 +73,7 @@ Quy tắc:
 - BỐI CẢNH RỘNG: Liên hệ với xu hướng hiện tại của thị trường, chu kỳ kinh tế, hoặc các sự kiện liên quan gần đây.
 - CẤU TRÚC VI MÔ THỊ TRƯỜNG: Nếu có dữ liệu về hợp đồng tương lai (futures), chênh lệch giá (spreads), đường cong kỳ hạn (forward curve), ghi nhận rõ.
 - ĐÁNH GIÁ MỨC ĐỘ QUAN TRỌNG: Kết thúc bằng 1 câu đánh giá mức độ ảnh hưởng của tin này đến thị trường (cao/trung bình/thấp).
+- Nếu bài viết về thị trường năng lượng Việt Nam (PetroVietnam, PVN, EVN, PV Gas, Petrolimex, PDP8, QHĐ8, điện lực, dầu khí Việt Nam), phân tích chi tiết và thêm tiền tố [VN] vào đầu tóm tắt.
 - Nếu bài viết không liên quan trực tiếp đến thị trường năng lượng, chỉ ghi: "Bài viết không liên quan trực tiếp đến thị trường năng lượng."
 - Nếu nội dung bài quá ngắn hoặc không rõ, tóm tắt dựa trên tiêu đề và ghi chú "[dựa trên tiêu đề]".
 - Không suy đoán hay thêm thông tin ngoài bài viết. Giữ giọng văn chuyên nghiệp, khách quan.`,
@@ -124,7 +135,15 @@ Trả lời bằng JSON đúng cấu trúc sau:
     "mediumTerm": "...",
     "keyLevels": "..."
   },
-  "riskAssessment": ["..."]
+  "riskAssessment": ["..."],
+  "vietnamMarket": {
+    "domesticPolicy": ["..."],
+    "pvnOperations": ["..."],
+    "electricitySupplyDemand": "...",
+    "coalImports": "...",
+    "lngProjects": "...",
+    "renewableTransition": "..."
+  }
 }
 
 Hướng dẫn từng mục:
@@ -138,7 +157,15 @@ Hướng dẫn từng mục:
   + shortTerm: Dự báo 1-2 tuần tới, kèm kịch bản cơ sở (base case).
   + mediumTerm: Dự báo 1-3 tháng, kèm các yếu tố có thể thay đổi kịch bản.
   + keyLevels: Các mức hỗ trợ/kháng cự quan trọng nếu có dữ liệu giá (VD: "Brent hỗ trợ $78, kháng cự $85").
-- riskAssessment: 2-4 rủi ro chính kèm xác suất định tính (VD: "Rủi ro gián đoạn nguồn cung từ Trung Đông — xác suất TRUNG BÌNH, tác động CAO nếu xảy ra").`,
+- riskAssessment: 2-4 rủi ro chính kèm xác suất định tính (VD: "Rủi ro gián đoạn nguồn cung từ Trung Đông — xác suất TRUNG BÌNH, tác động CAO nếu xảy ra").
+- vietnamMarket: Phần phân tích riêng cho thị trường năng lượng Việt Nam. Chỉ điền khi có bài viết liên quan đến Việt Nam (có tiền tố [VN]). Nếu không có dữ liệu, để mảng rỗng [] và chuỗi rỗng "".
+  + domesticPolicy: Chính sách năng lượng trong nước (QHĐ8/PDP8, quy hoạch điện, giá điện, cơ chế mua bán điện trực tiếp DPPA, v.v.)
+  + pvnOperations: Hoạt động của PetroVietnam và các công ty con (PV Gas, PVOIL, PVPower, Petrolimex) — sản lượng, doanh thu, dự án mới.
+  + electricitySupplyDemand: Tình hình cung cầu điện, công suất phát điện, tình trạng thiếu điện nếu có.
+  + coalImports: Nhập khẩu than cho nhiệt điện — khối lượng, giá, nguồn cung (Indonesia, Úc).
+  + lngProjects: Tiến độ các dự án LNG (Thị Vải, Sơn Mỹ, Bạc Liêu, Cà Ná) và nhập khẩu LNG.
+  + renewableTransition: Chuyển dịch năng lượng tái tạo — điện gió, điện mặt trời, cơ chế giá FIT/đấu thầu.
+- KẾT NỐI TOÀN CẦU - VIỆT NAM: Khi phân tích vietnamMarket, liên hệ các sự kiện toàn cầu tác động đến Việt Nam (VD: giá dầu thế giới tăng → chi phí nhập khẩu nhiên liệu của Việt Nam, quyết định OPEC+ → giá xăng nội địa).`,
       },
       {
         role: 'user',
@@ -146,7 +173,7 @@ Hướng dẫn từng mục:
       },
     ],
     response_format: { type: 'json_object' },
-    max_tokens: 2000,
+    max_tokens: 2500,
   });
 
   const content = response.choices[0]?.message?.content ?? '{}';
@@ -164,6 +191,14 @@ Hướng dẫn từng mục:
     expertAnalysis: '',
     predictions: { shortTerm: '', mediumTerm: '', keyLevels: '' },
     riskAssessment: [],
+    vietnamMarket: {
+      domesticPolicy: [],
+      pvnOperations: [],
+      electricitySupplyDemand: '',
+      coalImports: '',
+      lngProjects: '',
+      renewableTransition: '',
+    },
   };
 
   return { ...defaultSynthesis, ...parsed } satisfies Synthesis;

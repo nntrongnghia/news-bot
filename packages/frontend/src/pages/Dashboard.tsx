@@ -6,14 +6,14 @@ import ErrorBoundary from '../components/ErrorBoundary';
 
 function SectionHeader({ children }: { children: React.ReactNode }) {
   return (
-    <h2 className="text-xs uppercase tracking-[0.12em] font-semibold text-gray-500 dark:text-gray-400 pb-2 border-b-2 border-gray-900 dark:border-gray-100 mb-6">
+    <h2 className="text-[11px] uppercase tracking-[0.1em] font-semibold text-neutral-500 dark:text-neutral-400 pb-2 border-b-2 border-neutral-800 dark:border-neutral-200 mb-6">
       {children}
     </h2>
   );
 }
 
 function SkeletonBlock({ className }: { className?: string }) {
-  return <div className={`bg-gray-200 dark:bg-gray-800 rounded animate-skeleton ${className ?? ''}`} />;
+  return <div className={`bg-neutral-200 dark:bg-neutral-800 rounded animate-skeleton ${className ?? ''}`} />;
 }
 
 function DashboardSkeleton() {
@@ -97,7 +97,7 @@ export default function Dashboard() {
       <section>
         <SectionHeader>Báo Cáo Hôm Nay</SectionHeader>
         {reports.length === 0 ? (
-          <p className="text-gray-500 dark:text-gray-400">Chưa có báo cáo nào được tạo hôm nay.</p>
+          <p className="text-neutral-500 dark:text-neutral-400">Chưa có báo cáo nào được tạo hôm nay.</p>
         ) : (
           <div className="grid gap-0 md:grid-cols-2 md:gap-x-8">
             {reports.map((report) => (

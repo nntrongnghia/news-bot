@@ -23,6 +23,10 @@ export const config = {
     'https://www.ft.com/global-economy?format=rss',
     'https://pvj.com.vn/index.php/TCDK/gateway/plugin/WebFeedGatewayPlugin/rss',
     'https://en.vneconomy.vn/tin-moi.rss',
+    // Vietnam energy feeds
+    'https://petrotimes.vn/rss_feed/trang-chu',
+    'https://nangluongvietnam.vn/rss_feed/',
+    'https://vnexpress.net/rss/kinh-doanh.rss',
   ],
 
   keywords: {
@@ -31,9 +35,18 @@ export const config = {
       'petroleum', 'fuel', 'gasoline', 'diesel', 'energy market',
       'oil price', 'gas price', 'refinery', 'pipeline', 'barrel',
       'energy crisis', 'oil production', 'shale', 'offshore',
+      // Vietnam companies
+      'petrovietnam', 'pvn', 'evn', 'pv gas', 'petrolimex', 'pvpower', 'pvoil',
+      // Vietnamese terms (with diacritics)
+      'dầu khí', 'năng lượng', 'điện lực', 'thủy điện', 'nhiệt điện', 'khí đốt',
+      // Vietnamese terms (ASCII)
+      'dau khi', 'nang luong', 'dien luc', 'thuy dien', 'nhiet dien',
+      // English Vietnam terms
+      'vietnam energy', 'vietnam oil', 'vietnam gas', 'vietnam electricity', 'vietnam power', 'vietnam lng',
     ],
     exclude: [
       'solar panel installation', 'electric vehicle review',
+      'điện thoại', 'xe điện',
     ],
   },
 

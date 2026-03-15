@@ -7,7 +7,7 @@ import ErrorBoundary from '../components/ErrorBoundary';
 import { format } from 'date-fns';
 
 function SkeletonBlock({ className }: { className?: string }) {
-  return <div className={`bg-gray-200 dark:bg-gray-800 rounded animate-skeleton ${className ?? ''}`} />;
+  return <div className={`bg-neutral-200 dark:bg-neutral-800 rounded animate-skeleton ${className ?? ''}`} />;
 }
 
 function ReportDetailSkeleton() {
@@ -67,7 +67,7 @@ export default function ReportDetail() {
     return (
       <div className="text-center py-12">
         <p className="text-red-500 dark:text-red-400 mb-4">{error}</p>
-        <Link to="/" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200">
+        <Link to="/" className="text-neutral-500 dark:text-neutral-400 hover:text-neutral-800 dark:hover:text-neutral-200">
           Quay lại Bảng Điều Khiển
         </Link>
       </div>
@@ -77,8 +77,8 @@ export default function ReportDetail() {
   if (!report) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500 dark:text-gray-400 mb-4">Không tìm thấy báo cáo.</p>
-        <Link to="/" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200">
+        <p className="text-neutral-500 dark:text-neutral-400 mb-4">Không tìm thấy báo cáo.</p>
+        <Link to="/" className="text-neutral-500 dark:text-neutral-400 hover:text-neutral-800 dark:hover:text-neutral-200">
           Quay lại Bảng Điều Khiển
         </Link>
       </div>
@@ -88,13 +88,13 @@ export default function ReportDetail() {
   return (
     <div className="space-y-10">
       <div>
-        <Link to="/" className="text-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+        <Link to="/" className="text-[13px] text-neutral-500 dark:text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300">
           &larr; Quay lại
         </Link>
-        <h1 className="font-serif text-4xl font-bold text-gray-900 dark:text-gray-100 mt-2">
+        <h1 className="font-serif text-3xl font-bold tracking-[-0.01em] text-neutral-800 dark:text-neutral-200 mt-2">
           {report.reportKey}
         </h1>
-        <p className="text-sm text-gray-400 mt-1">
+        <p className="text-[13px] text-neutral-500 dark:text-neutral-400 mt-1">
           {format(new Date(report.generatedAt), 'MMMM d, yyyy h:mm a')}
           <span className="mx-1.5">&middot;</span>
           {report.articleCount ?? 0} bài viết
@@ -103,7 +103,7 @@ export default function ReportDetail() {
 
       {report.synthesis && (
         <section>
-          <h2 className="text-xs uppercase tracking-[0.12em] font-semibold text-gray-500 dark:text-gray-400 pb-2 border-b-2 border-gray-900 dark:border-gray-100 mb-6">
+          <h2 className="text-[11px] uppercase tracking-[0.1em] font-semibold text-neutral-500 dark:text-neutral-400 pb-2 border-b-2 border-neutral-800 dark:border-neutral-200 mb-6">
             Tổng Hợp Thị Trường
           </h2>
           <div className="max-w-4xl">
@@ -115,7 +115,7 @@ export default function ReportDetail() {
       )}
 
       <section>
-        <h2 className="text-xs uppercase tracking-[0.12em] font-semibold text-gray-500 dark:text-gray-400 pb-2 border-b-2 border-gray-900 dark:border-gray-100 mb-6">
+        <h2 className="text-[11px] uppercase tracking-[0.1em] font-semibold text-neutral-500 dark:text-neutral-400 pb-2 border-b-2 border-neutral-800 dark:border-neutral-200 mb-6">
           Bài Viết
         </h2>
         <ErrorBoundary>

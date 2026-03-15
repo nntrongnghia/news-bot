@@ -15,10 +15,7 @@ export const config = {
   port: env.PORT,
 
   feeds: [
-    'https://www.eia.gov/rss/todayinenergy.xml',
     'https://oilprice.com/rss/main',
-    'https://www.rigzone.com/news/rss/rigzone_latest.aspx',
-    'https://www.rigzone.com/news/rss/rigzone_finance.aspx',
     'https://www.oilandgas360.com/feed',
     'https://www.cnbc.com/id/19836768/device/rss/rss.html',
     'https://www.investing.com/rss/news.rss',
@@ -49,7 +46,7 @@ export const config = {
   },
 
   models: {
-    chat: 'openai/gpt-4o',
-    embedding: 'openai/text-embedding-3-small',
+    chat: 'google/gemini-3-flash-preview',
+    embedding: 'qwen/qwen3-embedding-8b',
   },
 } as const;

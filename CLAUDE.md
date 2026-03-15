@@ -56,7 +56,7 @@ All LLM/embedding calls go through **OpenRouter** using the OpenAI SDK with `bas
 
 ### Database
 
-PostgreSQL 16 with pgvector extension. Schema in `packages/backend/prisma/schema.prisma`. Two models: `Article` (with 1536-dim vector embedding) and `Report` (with JSON synthesis). Embeddings are stored via raw SQL since Prisma doesn't natively support the vector type.
+PostgreSQL 16 with pgvector extension. Schema in `packages/backend/prisma/schema.prisma`. Two models: `Article` (with 4096-dim vector embedding) and `Report` (with JSON synthesis). Embeddings are stored via raw SQL since Prisma doesn't natively support the vector type.
 
 ### API Routes (`api/routes.ts`)
 

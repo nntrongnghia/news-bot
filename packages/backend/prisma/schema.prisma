@@ -18,7 +18,7 @@ model Article {
   fetchedAt DateTime  @default(now()) @db.Timestamptz
   content   String?
   summary   String?
-  embedding Unsupported("vector(1536)")?
+  embedding Unsupported("vector(4096)")?
   reportId  Int?
   report    Report?   @relation(fields: [reportId], references: [id])
 

@@ -42,14 +42,14 @@ export async function summarizeArticles(
             {
               role: 'system',
               content:
-                'Bạn là một chuyên gia phân tích thị trường năng lượng cao cấp. Hãy tóm tắt bài viết sau trong 2-3 câu bằng tiếng Việt, tập trung vào tác động thị trường, ảnh hưởng đến giá cả, và động lực cung/cầu.',
+                'Bạn là một chuyên gia phân tích thị trường năng lượng cao cấp. Hãy tóm tắt bài viết sau trong 4-5 câu bằng tiếng Việt, tập trung vào tác động thị trường, ảnh hưởng đến giá cả, và động lực cung/cầu.',
             },
             {
               role: 'user',
               content: `Title: ${article.title}\nSource: ${article.source ?? 'Unknown'}\n\n${article.content ?? 'No content available.'}`,
             },
           ],
-          max_tokens: 200,
+          max_tokens: 300,
         });
 
         return {

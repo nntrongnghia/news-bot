@@ -2,23 +2,37 @@ import { Link } from 'react-router-dom';
 import type { ReactNode } from 'react';
 import { useTheme } from '../hooks/useTheme';
 
+function formatDate() {
+  return new Date().toLocaleDateString('vi-VN', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+}
+
 export default function Layout({ children }: { children: ReactNode }) {
   const { theme, toggleTheme } = useTheme();
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100">
-      <header className="border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
-        <div className="mx-auto max-w-6xl px-4 py-4 flex items-center justify-between">
-          <Link to="/" className="text-xl font-bold text-amber-400">
-            Bot Tin Tức Năng Lượng
-          </Link>
-          <div className="flex items-center gap-4">
-            <nav className="text-sm text-gray-500 dark:text-gray-400">
+    <div className="min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 font-sans">
+      <header className="border-b-2 border-gray-900 dark:border-gray-100">
+        <div className="mx-auto max-w-6xl px-6 lg:px-8 py-4 flex items-center justify-between">
+          <div>
+            <Link to="/" className="text-3xl font-serif font-bold text-gray-900 dark:text-gray-100">
+              Energy News Bot
+            </Link>
+            <p className="text-xs uppercase tracking-[0.15em] text-gray-500 dark:text-gray-400 mt-0.5">
               Phân Tích Thị Trường Năng Lượng Bằng AI
-            </nav>
+            </p>
+          </div>
+          <div className="flex items-center gap-4">
+            <span className="text-sm text-gray-400 hidden sm:block">
+              {formatDate()}
+            </span>
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
+              className="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
               aria-label="Toggle theme"
             >
               {theme === 'dark' ? (
@@ -34,7 +48,7 @@ export default function Layout({ children }: { children: ReactNode }) {
           </div>
         </div>
       </header>
-      <main className="mx-auto max-w-6xl px-4 py-8">{children}</main>
+      <main className="mx-auto max-w-6xl px-6 lg:px-8 py-8">{children}</main>
     </div>
   );
 }

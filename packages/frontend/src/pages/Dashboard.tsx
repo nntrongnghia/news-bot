@@ -4,6 +4,46 @@ import ReportCard from '../components/ReportCard';
 import Synthesis from '../components/Synthesis';
 import ErrorBoundary from '../components/ErrorBoundary';
 
+function SectionHeader({ children }: { children: React.ReactNode }) {
+  return (
+    <h2 className="text-xs uppercase tracking-[0.12em] font-semibold text-gray-500 dark:text-gray-400 pb-2 border-b-2 border-gray-900 dark:border-gray-100 mb-6">
+      {children}
+    </h2>
+  );
+}
+
+function SkeletonBlock({ className }: { className?: string }) {
+  return <div className={`bg-gray-200 dark:bg-gray-800 rounded animate-skeleton ${className ?? ''}`} />;
+}
+
+function DashboardSkeleton() {
+  return (
+    <div className="space-y-10">
+      <section>
+        <SkeletonBlock className="h-3 w-48 mb-6" />
+        <div className="space-y-4">
+          <SkeletonBlock className="h-5 w-3/4" />
+          <SkeletonBlock className="h-4 w-full max-w-[65ch]" />
+          <SkeletonBlock className="h-4 w-5/6 max-w-[65ch]" />
+          <SkeletonBlock className="h-4 w-2/3 max-w-[65ch]" />
+        </div>
+      </section>
+      <section>
+        <SkeletonBlock className="h-3 w-36 mb-6" />
+        <div className="grid gap-4 md:grid-cols-2">
+          {[1, 2].map((i) => (
+            <div key={i} className="space-y-2 py-5">
+              <SkeletonBlock className="h-5 w-full" />
+              <SkeletonBlock className="h-3 w-48" />
+              <SkeletonBlock className="h-4 w-5/6" />
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+}
+
 export default function Dashboard() {
   const [reports, setReports] = useState<Report[]>([]);
   const [latest, setLatest] = useState<Report | null>(null);
@@ -30,11 +70,7 @@ export default function Dashboard() {
   }, []);
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <p className="text-gray-400 dark:text-gray-500">Đang tải báo cáo...</p>
-      </div>
-    );
+    return <DashboardSkeleton />;
   }
 
   if (error) {
@@ -46,14 +82,11 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="space-y-8">
-      {/* Latest synthesis */}
+    <div className="space-y-10">
       {latest?.synthesis && (
         <section>
-          <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">
-            Tin Tức Thị Trường Mới Nhất
-          </h2>
-          <div className="border border-gray-200 dark:border-gray-800 rounded-lg p-6 bg-gray-100 dark:bg-gray-900/50">
+          <SectionHeader>Tin Tức Thị Trường Mới Nhất</SectionHeader>
+          <div className="max-w-4xl">
             <ErrorBoundary>
               <Synthesis synthesis={latest.synthesis} />
             </ErrorBoundary>
@@ -61,15 +94,12 @@ export default function Dashboard() {
         </section>
       )}
 
-      {/* Today's reports */}
       <section>
-        <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">
-          Báo Cáo Hôm Nay
-        </h2>
+        <SectionHeader>Báo Cáo Hôm Nay</SectionHeader>
         {reports.length === 0 ? (
-          <p className="text-gray-400 dark:text-gray-500">Chưa có báo cáo nào được tạo hôm nay.</p>
+          <p className="text-gray-500 dark:text-gray-400">Chưa có báo cáo nào được tạo hôm nay.</p>
         ) : (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-0 md:grid-cols-2 md:gap-x-8">
             {reports.map((report) => (
               <ReportCard key={report.id} report={report} />
             ))}

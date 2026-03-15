@@ -6,6 +6,39 @@ import ArticleList from '../components/ArticleList';
 import ErrorBoundary from '../components/ErrorBoundary';
 import { format } from 'date-fns';
 
+function SkeletonBlock({ className }: { className?: string }) {
+  return <div className={`bg-gray-200 dark:bg-gray-800 rounded animate-skeleton ${className ?? ''}`} />;
+}
+
+function ReportDetailSkeleton() {
+  return (
+    <div className="space-y-8">
+      <div>
+        <SkeletonBlock className="h-3 w-24 mb-3" />
+        <SkeletonBlock className="h-8 w-64 mb-2" />
+        <SkeletonBlock className="h-3 w-48" />
+      </div>
+      <div className="max-w-4xl space-y-4">
+        <SkeletonBlock className="h-3 w-40" />
+        <SkeletonBlock className="h-5 w-3/4" />
+        <SkeletonBlock className="h-4 w-full" />
+        <SkeletonBlock className="h-4 w-5/6" />
+        <SkeletonBlock className="h-4 w-2/3" />
+      </div>
+      <div className="space-y-4">
+        <SkeletonBlock className="h-3 w-24" />
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="py-4 space-y-2">
+            <SkeletonBlock className="h-3 w-32" />
+            <SkeletonBlock className="h-5 w-5/6" />
+            <SkeletonBlock className="h-4 w-3/4" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function ReportDetail() {
   const { id } = useParams<{ id: string }>();
   const [report, setReport] = useState<Report | null>(null);
@@ -27,18 +60,14 @@ export default function ReportDetail() {
   }, [id]);
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <p className="text-gray-400 dark:text-gray-500">Đang tải báo cáo...</p>
-      </div>
-    );
+    return <ReportDetailSkeleton />;
   }
 
   if (error) {
     return (
       <div className="text-center py-12">
         <p className="text-red-500 dark:text-red-400 mb-4">{error}</p>
-        <Link to="/" className="text-amber-400 hover:text-amber-300">
+        <Link to="/" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200">
           Quay lại Bảng Điều Khiển
         </Link>
       </div>
@@ -48,8 +77,8 @@ export default function ReportDetail() {
   if (!report) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-400 dark:text-gray-500 mb-4">Không tìm thấy báo cáo.</p>
-        <Link to="/" className="text-amber-400 hover:text-amber-300">
+        <p className="text-gray-500 dark:text-gray-400 mb-4">Không tìm thấy báo cáo.</p>
+        <Link to="/" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200">
           Quay lại Bảng Điều Khiển
         </Link>
       </div>
@@ -57,28 +86,27 @@ export default function ReportDetail() {
   }
 
   return (
-    <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <div>
-          <Link to="/" className="text-sm text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400">
-            &larr; Quay lại
-          </Link>
-          <h1 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mt-1">
-            {report.reportKey}
-          </h1>
-          <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">
-            {format(new Date(report.generatedAt), 'MMMM d, yyyy h:mm a')} &middot;{' '}
-            {report.articleCount ?? 0} bài viết
-          </p>
-        </div>
+    <div className="space-y-10">
+      <div>
+        <Link to="/" className="text-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+          &larr; Quay lại
+        </Link>
+        <h1 className="font-serif text-4xl font-bold text-gray-900 dark:text-gray-100 mt-2">
+          {report.reportKey}
+        </h1>
+        <p className="text-sm text-gray-400 mt-1">
+          {format(new Date(report.generatedAt), 'MMMM d, yyyy h:mm a')}
+          <span className="mx-1.5">&middot;</span>
+          {report.articleCount ?? 0} bài viết
+        </p>
       </div>
 
       {report.synthesis && (
         <section>
-          <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">
+          <h2 className="text-xs uppercase tracking-[0.12em] font-semibold text-gray-500 dark:text-gray-400 pb-2 border-b-2 border-gray-900 dark:border-gray-100 mb-6">
             Tổng Hợp Thị Trường
           </h2>
-          <div className="border border-gray-200 dark:border-gray-800 rounded-lg p-6 bg-gray-100 dark:bg-gray-900/50">
+          <div className="max-w-4xl">
             <ErrorBoundary>
               <Synthesis synthesis={report.synthesis} />
             </ErrorBoundary>
@@ -87,7 +115,9 @@ export default function ReportDetail() {
       )}
 
       <section>
-        <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Bài Viết</h2>
+        <h2 className="text-xs uppercase tracking-[0.12em] font-semibold text-gray-500 dark:text-gray-400 pb-2 border-b-2 border-gray-900 dark:border-gray-100 mb-6">
+          Bài Viết
+        </h2>
         <ErrorBoundary>
           <ArticleList articles={report.articles} />
         </ErrorBoundary>

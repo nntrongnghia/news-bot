@@ -45,6 +45,12 @@ export const config = {
     similarityThreshold: 0.15,
   },
 
+  extraction: {
+    timeoutMs: 20_000,
+    maxContentLength: 15_000,
+    concurrency: 5,
+  },
+
   models: {
     chat: 'google/gemini-3-flash-preview',
     embedding: 'qwen/qwen3-embedding-8b',

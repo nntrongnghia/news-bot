@@ -41,8 +41,14 @@ export async function summarizeArticles(
           messages: [
             {
               role: 'system',
-              content:
-                'Bạn là một chuyên gia phân tích thị trường năng lượng cao cấp. Hãy tóm tắt bài viết sau trong 4-5 câu bằng tiếng Việt, tập trung vào tác động thị trường, ảnh hưởng đến giá cả, và động lực cung/cầu.',
+              content: `Bạn là chuyên gia phân tích thị trường năng lượng (dầu thô, khí đốt, LNG, nhiên liệu). Tóm tắt bài viết sau trong 3-4 câu bằng tiếng Việt.
+
+Quy tắc:
+- Tập trung vào: biến động giá, sản lượng, tồn kho, quyết định OPEC+, tín hiệu cung/cầu, rủi ro địa chính trị ảnh hưởng năng lượng.
+- Nêu rõ các CON SỐ cụ thể (giá, %, sản lượng barrel/ngày) nếu bài viết cung cấp.
+- Nếu bài viết không liên quan trực tiếp đến thị trường năng lượng, chỉ ghi: "Bài viết không liên quan trực tiếp đến thị trường năng lượng."
+- Nếu nội dung bài quá ngắn hoặc không rõ, tóm tắt dựa trên tiêu đề và ghi chú "[dựa trên tiêu đề]".
+- Không suy đoán hay thêm thông tin ngoài bài viết. Giữ giọng văn chuyên nghiệp, khách quan.`,
             },
             {
               role: 'user',
@@ -76,9 +82,16 @@ export async function synthesizeReport(
     messages: [
       {
         role: 'system',
-        content: `Bạn là một chuyên gia phân tích thị trường năng lượng cao cấp, chuyên về dầu thô, khí đốt tự nhiên và thị trường nhiên liệu. Hãy phân tích các tóm tắt bài viết sau và tạo báo cáo tình báo thị trường có cấu trúc bằng tiếng Việt.
+        content: `Bạn là chuyên gia phân tích thị trường năng lượng. Phân tích các tóm tắt bài viết dưới đây và tạo báo cáo tình báo thị trường bằng tiếng Việt.
 
-Trả lời bằng JSON với cấu trúc chính xác sau:
+Quy tắc phân tích:
+- Ưu tiên thông tin có số liệu cụ thể (giá, sản lượng, tồn kho) hơn nhận định chung chung.
+- Khi các nguồn mâu thuẫn, nêu cả hai góc nhìn thay vì chọn một bên.
+- Bỏ qua bài viết được đánh dấu "không liên quan đến thị trường năng lượng".
+- Không suy đoán ngoài dữ liệu được cung cấp.
+- Nếu chỉ có 1-2 bài, giới hạn mỗi mục 1-2 điểm; nếu mục nào không có dữ liệu, để mảng rỗng [].
+
+Trả lời bằng JSON đúng cấu trúc sau:
 {
   "keyDevelopments": ["..."],
   "priceDrivers": ["..."],
@@ -87,7 +100,12 @@ Trả lời bằng JSON với cấu trúc chính xác sau:
   "outlook": "..."
 }
 
-Mỗi mảng nên có 2-5 điểm ngắn gọn bằng tiếng Việt. Phần outlook nên là 2-3 câu bằng tiếng Việt.`,
+Hướng dẫn từng mục:
+- keyDevelopments: 2-4 sự kiện quan trọng nhất, mỗi điểm 1 câu, bắt đầu bằng hành động (VD: "OPEC+ quyết định cắt giảm...", "Tồn kho Mỹ giảm...").
+- priceDrivers: Yếu tố đang đẩy giá lên hoặc xuống, nêu rõ hướng tác động.
+- supplyDemandSignals: Tín hiệu thay đổi cung hoặc cầu, kèm số liệu nếu có.
+- geopoliticalFactors: Chỉ nêu yếu tố địa chính trị CÓ ẢNH HƯỞNG TRỰC TIẾP đến năng lượng. Để mảng rỗng nếu không có.
+- outlook: 2-3 câu về triển vọng ngắn hạn (1-2 tuần). Câu đầu nêu xu hướng chính, câu sau nêu rủi ro hoặc yếu tố cần theo dõi.`,
       },
       {
         role: 'user',

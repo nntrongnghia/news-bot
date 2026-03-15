@@ -4,6 +4,7 @@ import {
   deduplicateArticles,
   storeArticleWithEmbedding,
 } from '../dedup/embeddings.js';
+import { extractFullContent } from '../feeds/extractor.js';
 import { summarizeArticles, synthesizeReport } from '../analysis/analyzer.js';
 import type { Synthesis } from '../analysis/analyzer.js';
 
@@ -54,19 +55,22 @@ export async function runPipeline(): Promise<GeneratedReport> {
     };
   }
 
-  // 3. Store articles with embeddings
+  // 3. Extract full article content
+  const enrichedArticles = await extractFullContent(uniqueArticles);
+
+  // 4. Store articles with embeddings
   const articleIds: number[] = [];
-  for (const article of uniqueArticles) {
+  for (const article of enrichedArticles) {
     const id = await storeArticleWithEmbedding(article);
     articleIds.push(id);
   }
 
-  // 4. Fetch stored articles for analysis
+  // 5. Fetch stored articles for analysis
   const storedArticles = await prisma.article.findMany({
     where: { id: { in: articleIds } },
   });
 
-  // 5. Summarize each article
+  // 6. Summarize each article
   const summaries = await summarizeArticles(
     storedArticles.map((a) => ({
       id: a.id,
@@ -86,7 +90,7 @@ export async function runPipeline(): Promise<GeneratedReport> {
     )
   );
 
-  // 6. Synthesize report
+  // 7. Synthesize report
   const synthesis = await synthesizeReport(
     storedArticles.map((a) => ({
       title: a.title,
@@ -95,7 +99,7 @@ export async function runPipeline(): Promise<GeneratedReport> {
     }))
   );
 
-  // 7. Create report and link articles
+  // 8. Create report and link articles
   const now = new Date();
   const reportKey = `report-${now.toISOString().slice(0, 13).replace(/[T:]/g, '-')}`;
   const report = await prisma.report.create({

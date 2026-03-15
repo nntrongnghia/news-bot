@@ -1,0 +1,39 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [vector]
+}
+
+model Article {
+  id        Int       @id @default(autoincrement())
+  url       String    @unique
+  title     String
+  source    String?
+  published DateTime? @db.Timestamptz
+  fetchedAt DateTime  @default(now()) @db.Timestamptz
+  content   String?
+  summary   String?
+  embedding Unsupported("vector(1536)")?
+  reportId  Int?
+  report    Report?   @relation(fields: [reportId], references: [id])
+
+  @@map("articles")
+}
+
+model Report {
+  id           Int       @id @default(autoincrement())
+  reportKey    String    @unique
+  generatedAt  DateTime  @default(now()) @db.Timestamptz
+  periodStart  DateTime  @db.Timestamptz
+  periodEnd    DateTime  @db.Timestamptz
+  articleCount Int?
+  synthesis    Json?
+  articles     Article[]
+
+  @@map("reports")
+}

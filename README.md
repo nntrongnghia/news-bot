@@ -49,8 +49,8 @@ pnpm db:migrate
 pnpm db:generate
 
 # Start development servers
-pnpm dev:backend    # API on http://localhost:8000
-pnpm dev:frontend   # UI on http://localhost:3000
+pnpm dev:backend    # API on http://localhost:8806
+pnpm dev:frontend   # UI on http://localhost:3306
 ```
 
 ## Docker Development
@@ -72,6 +72,70 @@ pnpm docker:deploy:down   # stop
 ```
 
 Frontend is served via nginx with SPA fallback and API reverse proxy.
+
+## Production Deployment
+
+### 1. Configure Environment Variables
+
+Create a `.env` file on your production server:
+
+```bash
+OPENROUTER_API_KEY=sk-or-v1-your-production-key
+DATABASE_URL=postgresql://postgres:postgres@localhost:5433/newsbot
+PORT=8806
+BETTER_AUTH_SECRET=your-secret-key-at-least-32-characters-long
+AUTH_ADMIN_EMAIL=admin@yourdomain.com
+AUTH_ADMIN_PASSWORD=a-strong-password
+TRUSTED_ORIGINS=https://your-domain.com
+PIPELINE_API_KEY=your-pipeline-api-key-min-16-chars
+```
+
+Key settings:
+- **`TRUSTED_ORIGINS`** — set to your production URL (e.g., `https://news.example.com`). Supports comma-separated values for multiple origins. This controls the CORS whitelist; without it, the backend rejects browser requests from your domain.
+- **`DATABASE_URL`** — for local dev only. Docker Compose overrides this internally to `postgresql://postgres:postgres@postgres:5432/newsbot`.
+- **`BETTER_AUTH_SECRET`** — must be at least 32 characters. Generate with `openssl rand -base64 32`.
+
+### 2. Deploy with Docker Compose
+
+```bash
+pnpm docker:deploy
+```
+
+This uses `docker-compose.yml` + `docker-compose.prod.yml` with restart policies. Services communicate over Docker's internal network — no localhost references needed.
+
+### 3. Set Up HTTPS with a Reverse Proxy
+
+Place a reverse proxy (Caddy, Traefik, or a cloud load balancer) in front of the frontend container (port 3306) to handle TLS termination.
+
+**Example with Caddy** (`Caddyfile`):
+
+```
+your-domain.com {
+    reverse_proxy localhost:3306
+}
+```
+
+Caddy automatically provisions and renews Let's Encrypt certificates.
+
+### 4. DNS
+
+Point your domain's A/AAAA record to your server's IP address.
+
+### What's Already Production-Ready
+
+| Component | Why no changes needed |
+|-----------|----------------------|
+| Frontend API client | Uses relative `/api` paths, no hardcoded host |
+| Auth client | Uses `window.location.origin` at runtime |
+| Nginx config | Proxies `/api/` to `http://backend:8806` via Docker DNS |
+| Docker networking | Services reference each other by name (`backend`, `postgres`) |
+| Database URL | Docker Compose overrides `.env` with internal connection string |
+
+### Verification
+
+1. Visit `https://your-domain.com` — dashboard should load
+2. Open browser DevTools Network tab — `/api/*` calls should return 200
+3. If you see CORS errors, verify `TRUSTED_ORIGINS` matches your domain exactly (including `https://`)
 
 ## Architecture
 
@@ -121,7 +185,12 @@ RSS Feeds → Fetch & Filter → Deduplicate (pgvector) → Store → Summarize 
 |----------|-------------|---------|
 | `OPENROUTER_API_KEY` | API key for OpenRouter (LLM + embeddings) | — |
 | `DATABASE_URL` | PostgreSQL connection string | `postgresql://postgres:postgres@localhost:5433/newsbot` |
-| `PORT` | Backend server port | `8000` |
+| `PORT` | Backend server port | `8806` |
+| `BETTER_AUTH_SECRET` | Auth secret key (min 32 chars) | — |
+| `AUTH_ADMIN_EMAIL` | Admin account email | `admin@local.dev` |
+| `AUTH_ADMIN_PASSWORD` | Admin account password | `changeme` |
+| `TRUSTED_ORIGINS` | CORS allowed origins (comma-separated) | `http://localhost:3306` |
+| `PIPELINE_API_KEY` | API key for pipeline trigger endpoint (min 16 chars) | — |
 
 ## License
 

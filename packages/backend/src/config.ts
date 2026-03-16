@@ -121,7 +121,7 @@ export const config = {
   },
 
   models: {
-    chat: 'google/gemini-3-flash-preview',
+    chat: 'openai/gpt-5.4',
     summarize: 'google/gemini-2.5-flash-lite',
     embedding: 'qwen/qwen3-embedding-8b',
   },

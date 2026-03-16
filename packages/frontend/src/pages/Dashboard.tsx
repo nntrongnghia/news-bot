@@ -101,7 +101,7 @@ export default function Dashboard() {
 
       {latest?.synthesis && (
         <section>
-          <SectionHeader>Tin Tức Thị Trường Mới Nhất</SectionHeader>
+          <SectionHeader>Phân Tích Thị Trường Mới Nhất</SectionHeader>
           <p className="text-xs text-neutral-500 dark:text-neutral-400 -mt-4 mb-4">
             {new Date(latest.generatedAt).toLocaleString('vi-VN', {
               dateStyle: 'full',

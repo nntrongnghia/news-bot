@@ -69,7 +69,7 @@ export default function PriceChart() {
     : true;
 
   const chartData = data?.prices.map((p) => ({
-    date: formatDate(p.date, range),
+    ts: new Date(p.date).getTime(),
     price: p.price,
     fullDate: p.date,
   })) ?? [];
@@ -148,12 +148,13 @@ export default function PriceChart() {
                 </linearGradient>
               </defs>
               <XAxis
-                dataKey="date"
+                dataKey="fullDate"
                 tick={{ fontSize: 10, fill: '#a3a3a3' }}
                 axisLine={false}
                 tickLine={false}
                 interval="preserveStartEnd"
                 minTickGap={40}
+                tickFormatter={(date: string) => formatDate(date, range)}
               />
               <YAxis
                 domain={[minPrice, maxPrice]}

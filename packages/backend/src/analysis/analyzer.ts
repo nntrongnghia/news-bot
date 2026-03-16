@@ -71,12 +71,21 @@ export async function summarizeArticles(
         const response = await openai.chat.completions.create({
           model: config.models.summarize,
           temperature: 0.3,
+          // @ts-ignore - OpenRouter reasoning parameter
+          extra_body: {
+            reasoning: { effort: "low" }
+          },
           messages: [
             {
               role: 'system',
               content: `Ngày hôm nay: ${today}
 
 Bạn là chuyên gia phân tích cấp cao (senior analyst) tại ngân hàng đầu tư quốc tế, chuyên về thị trường năng lượng (dầu thô, khí đốt, LNG, nhiên liệu). Tóm tắt bài viết sau trong 8-12 câu bằng tiếng Việt.
+
+### QUY TRÌNH TƯ DUY (REASONING):
+1. Phân loại bài viết: Có thuộc lĩnh vực năng lượng (Dầu, khí, điện, LNG, chính sách năng lượng) không?
+2. Trích xuất Thực thể: Ai (OPEC+, PVN...), Con số gì (Giá, Sản lượng, %, Ngày), Sự kiện gì.
+3. Xác định Nhân-Quả: Sự kiện này dẫn đến biến động gì trong ngắn hạn?
 
 Quy tắc:
 - THÔNG TIN QUAN TRỌNG NHẤT TRƯỚC: Viết theo cấu trúc kim tự tháp ngược — thông tin có tác động lớn nhất đến thị trường đặt ở đầu, chi tiết bổ sung sau.
@@ -121,7 +130,7 @@ export async function synthesizeReport(
   const articleBlock = summaries
     .map((s, i) => {
       const date = s.published ? new Date(s.published).toISOString().slice(0, 16).replace('T', ' ') : 'N/A';
-      const contentSection = s.content ? `\nNội dung gốc:\n${s.content}` : '';
+      const contentSection = s.content ? `\nNội dung gốc:\n${s.content.slice(0, 1500)}` : '';
       return `[${i + 1}] ${s.title} (${s.source ?? 'Unknown'} — ${date})\nURL: ${s.url}\nTóm tắt:\n${s.summary}${contentSection}`;
     })
     .join('\n\n---\n\n');
@@ -139,12 +148,21 @@ export async function synthesizeReport(
   const response = await openai.chat.completions.create({
     model: config.models.chat,
     temperature: 0.4,
+    // @ts-ignore - OpenRouter reasoning parameter
+    extra_body: {
+      reasoning: { effort: "high" }
+    },
     messages: [
       {
         role: 'system',
         content: `Ngày phân tích: ${today}
 
 Bạn là Trưởng Bộ Phận Phân Tích Thị Trường Năng Lượng (Head of Energy Market Analysis) tại ngân hàng đầu tư quốc tế. Phân tích các bài viết dưới đây (bao gồm tóm tắt và nội dung gốc) và tạo báo cáo tình báo thị trường chất lượng đầu tư (investment-grade) bằng tiếng Việt.
+
+### CHIẾN LƯỢC TỔNG HỢP (REASONING MANDATE):
+1. ĐỐI CHIẾU NGUỒN: Nếu bài [1] nói giá tăng, bài [2] nói giá giảm → Phân tích mâu thuẫn này do đâu (Kỳ hạn khác nhau? Khu vực khác nhau? Sản phẩm khác nhau?).
+2. PHÂN TÍCH TỔNG HỢP: Kết nối tin địa chính trị với tin tồn kho, tin OPEC+ với tin giá spot để đưa ra xu hướng Outlook nhất quán.
+3. LỌC NHIỄU: Loại bỏ thông tin cũ hoặc không có giá trị phân tích. Ưu tiên dữ liệu trong 24h.
 
 Quy tắc phân tích:
 - Ưu tiên thông tin có số liệu cụ thể (giá, sản lượng, tồn kho) hơn nhận định chung chung.
@@ -185,7 +203,7 @@ Trả lời bằng JSON đúng cấu trúc sau:
 }
 
 Hướng dẫn từng mục:
-- title: Tiêu đề báo cáo ngắn gọn 10-15 từ bằng tiếng Việt, kiểu tiêu đề báo chí, tóm tắt diễn biến thị trường quan trọng nhất. VD: "Giá dầu Brent vượt $85 sau quyết định cắt giảm sản lượng của OPEC+"
+- title: Tiêu đề mang tính hành động (Actionable Title) 10-15 từ bằng tiếng Việt, kiểu tiêu đề báo chí, tóm tắt diễn biến thị trường quan trọng nhất. VD: "Giá dầu Brent vượt $85 sau quyết định cắt giảm sản lượng của OPEC+"
 - keyDevelopments: 3-5 sự kiện quan trọng nhất, mỗi điểm 2-3 câu với số liệu cụ thể và nguồn tham chiếu (VD: "OPEC+ quyết định cắt giảm 1.2 triệu thùng/ngày từ tháng 4, theo tuyên bố của Tổng thư ký Haitham Al Ghais ngày 15/3 (Reuters). Quyết định này vượt kỳ vọng thị trường và đẩy giá Brent tăng 3.2%."). Bắt đầu bằng hành động cụ thể.
 - priceDrivers: Yếu tố đang đẩy giá lên (↑) hoặc xuống (↓), nêu rõ hướng tác động. Phân biệt yếu tố ngắn hạn vs cấu trúc. Trích dẫn biến động giá cụ thể (VD: "Brent +2.1% lên $82.4/thùng").
 - supplyDemandSignals: Bao gồm cả tín hiệu thị trường vật chất (physical) và thị trường giấy (paper/derivatives) nếu có. Kèm số liệu cụ thể.
@@ -200,8 +218,6 @@ Hướng dẫn từng mục:
 - vietnamMarket: Phần phân tích riêng cho thị trường năng lượng Việt Nam. Chỉ điền khi có bài viết liên quan đến Việt Nam (có tiền tố [VN]). Nếu không có dữ liệu, để mảng rỗng [] và chuỗi rỗng "".
   + domesticPolicy: Chính sách năng lượng trong nước (QHĐ8/PDP8, quy hoạch điện, giá điện, cơ chế mua bán điện trực tiếp DPPA, v.v.)
   + pvnOperations: Hoạt động của PetroVietnam và các công ty con (PV Gas, PVOIL, PVPower, Petrolimex) — sản lượng, doanh thu, dự án mới.
-  + electricitySupplyDemand: Tình hình cung cầu điện, công suất phát điện, tình trạng thiếu điện nếu có.
-  + lngProjects: Tiến độ các dự án LNG (Thị Vải, Sơn Mỹ, Bạc Liêu, Cà Ná) và nhập khẩu LNG.
 - KẾT NỐI TOÀN CẦU - VIỆT NAM: Khi phân tích vietnamMarket, liên hệ các sự kiện toàn cầu tác động đến Việt Nam (VD: giá dầu thế giới tăng → chi phí nhập khẩu nhiên liệu của Việt Nam, quyết định OPEC+ → giá xăng nội địa).`,
       },
       {

@@ -122,6 +122,10 @@ export default function ReportDetail() {
           <ArticleList articles={report.articles} />
         </ErrorBoundary>
       </section>
+
+      <p className="text-[11px] text-neutral-400 dark:text-neutral-500 mt-8 pt-6 border-t border-neutral-200 dark:border-neutral-800 leading-relaxed">
+        <span className="font-semibold">Lưu ý:</span> Nội dung báo cáo này được tổng hợp tự động từ các nguồn báo chí chính thống và dữ liệu thị trường công khai, chỉ mang tính chất tham khảo. Chúng tôi không phải là cơ quan báo chí. Mọi thông tin không thay thế cho các quyết định đầu tư hay điều hành chính thức.
+      </p>
     </div>
   );
 }

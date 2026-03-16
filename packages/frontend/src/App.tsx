@@ -12,19 +12,11 @@ export default function App() {
       <Route path="/login" element={<Login />} />
       <Route
         path="/"
-        element={
-          <ProtectedRoute>
-            <Layout><Dashboard /></Layout>
-          </ProtectedRoute>
-        }
+        element={<Layout><Dashboard /></Layout>}
       />
       <Route
         path="/reports/:id"
-        element={
-          <ProtectedRoute>
-            <Layout><ReportDetail /></Layout>
-          </ProtectedRoute>
-        }
+        element={<Layout><ReportDetail /></Layout>}
       />
       <Route
         path="/admin"

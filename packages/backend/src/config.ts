@@ -36,6 +36,9 @@ export const config = {
     'https://petrotimes.vn/rss_feed/trang-chu',
     'https://nangluongvietnam.vn/rss_feed/',
     'https://vnexpress.net/rss/kinh-doanh.rss',
+    'https://vnexpress.net/rss/thoi-su.rss',
+    'https://vnexpress.net/rss/the-gioi.rss',
+    'https://vnexpress.net/rss/tin-noi-bat.rss',
   ],
 
   keywords: {

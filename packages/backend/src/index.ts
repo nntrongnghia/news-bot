@@ -52,20 +52,20 @@ async function main() {
     reply.send(text);
   });
 
-  // Auth guard for all /api/* routes (except /api/auth/*)
-  app.addHook('preHandler', async (req, reply) => {
-    if (req.url.startsWith('/api/auth/')) return;
-    if (!req.url.startsWith('/api/')) return;
-    if (req.url === '/api/pipeline/run' && req.method === 'POST') return;
-
-    const session = await auth.api.getSession({
-      headers: req.headers as Record<string, string>,
-    });
-    if (!session) {
-      return reply.status(401).send({ error: 'Not authenticated' });
-    }
-    (req as any).session = session;
-  });
+  // AUTH BYPASSED — uncomment to re-enable
+  // app.addHook('preHandler', async (req, reply) => {
+  //   if (req.url.startsWith('/api/auth/')) return;
+  //   if (!req.url.startsWith('/api/')) return;
+  //   if (req.url === '/api/pipeline/run' && req.method === 'POST') return;
+  //
+  //   const session = await auth.api.getSession({
+  //     headers: req.headers as Record<string, string>,
+  //   });
+  //   if (!session) {
+  //     return reply.status(401).send({ error: 'Not authenticated' });
+  //   }
+  //   (req as any).session = session;
+  // });
 
   await registerRoutes(app);
   startScheduler();

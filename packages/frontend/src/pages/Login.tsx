@@ -80,7 +80,7 @@ export default function Login() {
 
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-serif font-bold tracking-[-0.01em]">Tin tức xăng dầu</h1>
+          <h1 className="text-2xl font-serif font-bold tracking-[-0.01em]">Phân tích thị trường xăng dầu</h1>
           <p className="text-[11px] uppercase tracking-[0.1em] text-neutral-700 dark:text-neutral-300 mt-1">
             {isSignUp ? 'Tạo tài khoản mới' : 'Đăng nhập'}
           </p>

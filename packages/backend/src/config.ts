@@ -9,6 +9,7 @@ const envSchema = z.object({
   AUTH_ADMIN_EMAIL: z.string().default('admin@local.dev'),
   AUTH_ADMIN_PASSWORD: z.string().default('changeme'),
   TRUSTED_ORIGINS: z.string().default('http://localhost:3000'),
+  PIPELINE_API_KEY: z.string().min(16),
 });
 
 const env = envSchema.parse(process.env);
@@ -21,6 +22,7 @@ export const config = {
   authAdminEmail: env.AUTH_ADMIN_EMAIL,
   authAdminPassword: env.AUTH_ADMIN_PASSWORD,
   trustedOrigins: env.TRUSTED_ORIGINS.split(',').map((s) => s.trim()),
+  pipelineApiKey: env.PIPELINE_API_KEY,
 
   feeds: [
     'https://oilprice.com/rss/main',
@@ -65,14 +67,19 @@ export const config = {
     similarityThreshold: 0.15,
   },
 
+  pipeline: {
+    maxArticleAgeHours: 48,
+  },
+
   extraction: {
     timeoutMs: 20_000,
-    maxContentLength: 15_000,
+    maxContentLength: 50_000,
     concurrency: 5,
   },
 
   models: {
     chat: 'google/gemini-3-flash-preview',
+    summarize: 'google/gemini-2.5-flash-lite',
     embedding: 'qwen/qwen3-embedding-8b',
   },
 } as const;

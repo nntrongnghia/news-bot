@@ -38,6 +38,14 @@ export interface VietnamMarket {
   renewableTransition: string;
 }
 
+export interface SourceRef {
+  index: number;
+  title: string;
+  source: string | null;
+  url: string;
+  published: string | null;
+}
+
 export interface Synthesis {
   title?: string;
   keyDevelopments: string[];
@@ -49,6 +57,7 @@ export interface Synthesis {
   predictions?: PricePrediction;
   riskAssessment?: string[];
   vietnamMarket?: VietnamMarket;
+  sources?: SourceRef[];
 }
 
 export interface Report {

@@ -7,11 +7,12 @@
     "build": "pnpm -r build",
     "db:migrate": "pnpm --filter backend db:migrate",
     "db:generate": "pnpm --filter backend db:generate",
-    "docker:dev": "docker compose -f docker-compose.dev.yml up --build",
+    "docker:dev": "docker compose -f docker-compose.dev.yml up --build -d",
     "docker:dev:down": "docker compose -f docker-compose.dev.yml down",
     "docker:deploy": "docker compose -f docker-compose.prod.yml up --build -d",
     "docker:deploy:down": "docker compose -f docker-compose.prod.yml down",
-    "pipeline": "pnpm --filter backend pipeline"
+    "pipeline": "export $(grep PIPELINE_API_KEY .env) && pnpm --filter backend pipeline",
+    "purge": "pnpm --filter backend purge"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

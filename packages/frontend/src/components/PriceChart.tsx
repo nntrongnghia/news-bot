@@ -31,6 +31,12 @@ function formatDate(iso: string, range: string): string {
   return format(d, 'dd/MM/yy');
 }
 
+function formatTooltipDate(iso: string, range: string): string {
+  const d = new Date(iso);
+  if (range === '5d' || range === '1mo') return format(d, 'dd/MM HH:mm');
+  return format(d, 'dd/MM/yy');
+}
+
 export default function PriceChart() {
   const [range, setRange] = useState('1mo');
   const [symbol, setSymbol] = useState('CL=F');
@@ -167,13 +173,17 @@ export default function PriceChart() {
                   padding: '6px 10px',
                 }}
                 formatter={(value: unknown) => [`$${Number(value).toFixed(2)}`, 'Giá']}
-                labelFormatter={(label: unknown) => String(label)}
+                labelFormatter={(_label, payload) => {
+                  const fullDate = (payload as any)?.[0]?.payload?.fullDate;
+                  if (!fullDate) return String(_label);
+                  return formatTooltipDate(fullDate, range);
+                }}
               />
               <Area
-                type="monotone"
+                type="linear"
                 dataKey="price"
                 stroke={trendPositive ? '#059669' : '#dc2626'}
-                strokeWidth={1.5}
+                strokeWidth={1}
                 fill="url(#priceGradient)"
                 dot={false}
                 activeDot={{ r: 3, strokeWidth: 0 }}

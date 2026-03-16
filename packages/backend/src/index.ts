@@ -31,7 +31,7 @@ async function main() {
     origin: config.trustedOrigins,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Cookie', 'x-api-key'],
   });
 
   // BetterAuth catch-all handler
@@ -56,6 +56,7 @@ async function main() {
   app.addHook('preHandler', async (req, reply) => {
     if (req.url.startsWith('/api/auth/')) return;
     if (!req.url.startsWith('/api/')) return;
+    if (req.url === '/api/pipeline/run' && req.method === 'POST') return;
 
     const session = await auth.api.getSession({
       headers: req.headers as Record<string, string>,

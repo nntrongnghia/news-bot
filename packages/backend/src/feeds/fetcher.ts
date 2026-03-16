@@ -19,10 +19,17 @@ async function fetchFeed(feedUrl: string): Promise<RawArticle[]> {
     const feed = await parser.parseURL(feedUrl);
     const sourceName = feed.title ?? new URL(feedUrl).hostname;
 
+    const maxAgeMs = config.pipeline.maxArticleAgeHours * 60 * 60 * 1000;
+
     return (feed.items ?? [])
       .filter((item) => {
         const text = `${item.title ?? ''} ${item.contentSnippet ?? ''}`;
         return item.link && matchesKeywords(text);
+      })
+      .filter((item) => {
+        if (!item.pubDate) return true; // keep articles without dates
+        const age = Date.now() - new Date(item.pubDate).getTime();
+        return age <= maxAgeMs;
       })
       .map((item) => ({
         url: item.link!,

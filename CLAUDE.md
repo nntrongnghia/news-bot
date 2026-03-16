@@ -101,7 +101,8 @@ React 19 SPA built with Vite 6 and Tailwind v4. UI is in Vietnamese.
 All LLM/embedding calls go through **OpenRouter** using the OpenAI SDK with `baseURL: 'https://openrouter.ai/api/v1'`. Do not use direct Anthropic/OpenAI endpoints.
 
 Models (configured in `config.ts`):
-- **Chat:** `google/gemini-3-flash-preview` (`config.models.chat`)
+- **Chat:** `google/gemini-3-flash-preview` (`config.models.chat`) — used for synthesis
+- **Summarize:** `google/gemini-2.5-flash-lite` (`config.models.summarize`) — used for per-article summarization
 - **Embedding:** `qwen/qwen3-embedding-8b` (`config.models.embedding`) — 4096 dimensions
 
 ### Database

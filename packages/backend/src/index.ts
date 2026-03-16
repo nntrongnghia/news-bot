@@ -24,7 +24,7 @@ async function main() {
   // Ensure pgvector extension exists
   await ensureVectorExtension();
 
-  const app = Fastify({ logger: true });
+  const app = Fastify({ logger: true, trustProxy: true });
 
   // CORS with credentials support
   await app.register(cors, {

@@ -2,6 +2,7 @@ import { FastifyInstance } from 'fastify';
 import { prisma } from '../db/index.js';
 import { runPipeline } from '../reports/generator.js';
 import { config } from '../config.js';
+import { auth } from '../auth.js';
 
 // Simple in-memory rate limiter: 5 feedback submissions per hour per IP
 const feedbackRateLimit = new Map<string, number[]>();
@@ -20,6 +21,36 @@ function recordRequest(ip: string) {
   const timestamps = (feedbackRateLimit.get(ip) || []).filter(t => t > hourAgo);
   timestamps.push(now);
   feedbackRateLimit.set(ip, timestamps);
+}
+
+// Rate limiter for tracking: 60 per minute per IP
+const trackRateLimit = new Map<string, number[]>();
+
+function isTrackRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const minuteAgo = now - 60 * 1000;
+  const timestamps = (trackRateLimit.get(ip) || []).filter(t => t > minuteAgo);
+  trackRateLimit.set(ip, timestamps);
+  return timestamps.length >= 60;
+}
+
+function recordTrackRequest(ip: string) {
+  const now = Date.now();
+  const minuteAgo = now - 60 * 1000;
+  const timestamps = (trackRateLimit.get(ip) || []).filter(t => t > minuteAgo);
+  timestamps.push(now);
+  trackRateLimit.set(ip, timestamps);
+}
+
+async function requireAdmin(req: { headers: Record<string, string | string[] | undefined> }): Promise<boolean> {
+  try {
+    const session = await auth.api.getSession({
+      headers: req.headers as Record<string, string>,
+    });
+    return session?.user?.role === 'admin';
+  } catch {
+    return false;
+  }
 }
 
 export async function registerRoutes(app: FastifyInstance) {
@@ -173,16 +204,163 @@ export async function registerRoutes(app: FastifyInstance) {
     }
   );
 
+  // Page view tracking
+  app.post<{ Body: { url?: string; referrer?: string } }>(
+    '/api/track',
+    async (req, reply) => {
+      const { url: pageUrl, referrer } = req.body || {};
+      if (!pageUrl || typeof pageUrl !== 'string') {
+        return reply.status(400).send({ error: 'url is required' });
+      }
+
+      const ip = req.ip;
+      if (isTrackRateLimited(ip)) {
+        return reply.status(204).send();
+      }
+      recordTrackRequest(ip);
+
+      // Fire-and-forget
+      prisma.pageView.create({
+        data: {
+          url: pageUrl,
+          userAgent: req.headers['user-agent'] || null,
+          ip,
+          referrer: referrer || null,
+        },
+      }).catch(() => {});
+
+      return reply.status(204).send();
+    }
+  );
+
   // Manual pipeline trigger
   app.post('/api/pipeline/run', async (req, reply) => {
     const apiKey = req.headers['x-api-key'];
     if (apiKey !== config.pipelineApiKey) {
       return reply.status(401).send({ error: 'Invalid API key' });
     }
-    const report = await runPipeline();
-    if (!report) {
-      return { message: 'No new articles found', skipped: true };
+
+    const log = await prisma.pipelineLog.create({
+      data: { trigger: 'manual', status: 'running' },
+    });
+
+    try {
+      const report = await runPipeline();
+      if (!report) {
+        await prisma.pipelineLog.update({
+          where: { id: log.id },
+          data: { status: 'skipped', finishedAt: new Date() },
+        });
+        return { message: 'No new articles found', skipped: true };
+      }
+
+      await prisma.pipelineLog.update({
+        where: { id: log.id },
+        data: {
+          status: 'success',
+          finishedAt: new Date(),
+          articleCount: report.articleCount,
+          reportId: report.id,
+        },
+      });
+      return report;
+    } catch (err) {
+      await prisma.pipelineLog.update({
+        where: { id: log.id },
+        data: {
+          status: 'error',
+          finishedAt: new Date(),
+          error: err instanceof Error ? err.message : String(err),
+        },
+      });
+      throw err;
     }
-    return report;
   });
+
+  // Admin: visit stats
+  app.get('/api/admin/visits/stats', async (req, reply) => {
+    if (!(await requireAdmin(req))) {
+      return reply.status(403).send({ error: 'Forbidden' });
+    }
+
+    const now = new Date();
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const weekStart = new Date(todayStart.getTime() - 6 * 24 * 60 * 60 * 1000);
+    const monthStart = new Date(todayStart.getTime() - 29 * 24 * 60 * 60 * 1000);
+
+    const [todayCount, weekCount, monthCount, uniqueIpsToday] = await Promise.all([
+      prisma.pageView.count({ where: { createdAt: { gte: todayStart } } }),
+      prisma.pageView.count({ where: { createdAt: { gte: weekStart } } }),
+      prisma.pageView.count({ where: { createdAt: { gte: monthStart } } }),
+      prisma.$queryRaw<[{ count: bigint }]>`
+        SELECT COUNT(DISTINCT ip) as count FROM page_views WHERE "createdAt" >= ${todayStart}
+      `,
+    ]);
+
+    return {
+      today: todayCount,
+      week: weekCount,
+      month: monthCount,
+      uniqueIpsToday: Number(uniqueIpsToday[0]?.count ?? 0),
+    };
+  });
+
+  // Admin: daily visits + top pages
+  app.get<{ Querystring: { days?: string } }>(
+    '/api/admin/visits',
+    async (req, reply) => {
+      if (!(await requireAdmin(req))) {
+        return reply.status(403).send({ error: 'Forbidden' });
+      }
+
+      const days = Math.min(parseInt(req.query.days || '7', 10) || 7, 90);
+      const since = new Date();
+      since.setDate(since.getDate() - days);
+
+      const [dailyRaw, topPages] = await Promise.all([
+        prisma.$queryRaw<{ date: Date; count: bigint }[]>`
+          SELECT DATE("createdAt") as date, COUNT(*) as count
+          FROM page_views
+          WHERE "createdAt" >= ${since}
+          GROUP BY DATE("createdAt")
+          ORDER BY date ASC
+        `,
+        prisma.$queryRaw<{ url: string; count: bigint }[]>`
+          SELECT url, COUNT(*) as count
+          FROM page_views
+          WHERE "createdAt" >= ${since}
+          GROUP BY url
+          ORDER BY count DESC
+          LIMIT 10
+        `,
+      ]);
+
+      return {
+        daily: dailyRaw.map(r => ({
+          date: r.date instanceof Date ? r.date.toISOString().slice(0, 10) : String(r.date),
+          count: Number(r.count),
+        })),
+        topPages: topPages.map(r => ({ url: r.url, count: Number(r.count) })),
+      };
+    }
+  );
+
+  // Admin: pipeline logs
+  app.get<{ Querystring: { limit?: string } }>(
+    '/api/admin/pipeline-logs',
+    async (req, reply) => {
+      if (!(await requireAdmin(req))) {
+        return reply.status(403).send({ error: 'Forbidden' });
+      }
+
+      const limit = Math.min(parseInt(req.query.limit || '50', 10) || 50, 200);
+
+      const logs = await prisma.pipelineLog.findMany({
+        orderBy: { startedAt: 'desc' },
+        take: limit,
+      });
+
+      return logs;
+    }
+  );
 }

@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import type { ReactNode } from 'react';
 import { useTheme } from '../hooks/useTheme';
+import { usePageTracking } from '../hooks/usePageTracking';
 import FeedbackModal from './FeedbackForm';
 import { authClient } from '../lib/auth-client';
 
@@ -14,6 +15,7 @@ function formatDate() {
 }
 
 export default function Layout({ children }: { children: ReactNode }) {
+  usePageTracking();
   const { theme, toggleTheme } = useTheme();
   const { data: session } = authClient.useSession();
   const navigate = useNavigate();

@@ -144,3 +144,54 @@ export async function triggerPipeline(): Promise<Report> {
   const res = await apiFetch(`${BASE_URL}/pipeline/run`, { method: 'POST' });
   return res.json();
 }
+
+// Admin types and functions
+
+export interface VisitStats {
+  today: number;
+  week: number;
+  month: number;
+  uniqueIpsToday: number;
+}
+
+export interface DailyVisits {
+  date: string;
+  count: number;
+}
+
+export interface TopPage {
+  url: string;
+  count: number;
+}
+
+export interface VisitData {
+  daily: DailyVisits[];
+  topPages: TopPage[];
+}
+
+export interface PipelineLogEntry {
+  id: number;
+  trigger: string;
+  cronExpr: string | null;
+  startedAt: string;
+  finishedAt: string | null;
+  status: string;
+  articleCount: number | null;
+  reportId: number | null;
+  error: string | null;
+}
+
+export async function fetchVisitStats(): Promise<VisitStats> {
+  const res = await apiFetch(`${BASE_URL}/admin/visits/stats`);
+  return res.json();
+}
+
+export async function fetchVisitData(days: number = 7): Promise<VisitData> {
+  const res = await apiFetch(`${BASE_URL}/admin/visits?days=${days}`);
+  return res.json();
+}
+
+export async function fetchPipelineLogs(limit: number = 50): Promise<PipelineLogEntry[]> {
+  const res = await apiFetch(`${BASE_URL}/admin/pipeline-logs?limit=${limit}`);
+  return res.json();
+}

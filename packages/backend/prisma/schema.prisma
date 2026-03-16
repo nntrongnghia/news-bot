@@ -112,3 +112,31 @@ model Verification {
 
   @@map("verification")
 }
+
+model PageView {
+  id        Int      @id @default(autoincrement())
+  url       String
+  userAgent String?
+  ip        String?
+  referrer  String?
+  createdAt DateTime @default(now()) @db.Timestamptz
+
+  @@index([createdAt])
+  @@index([url])
+  @@map("page_views")
+}
+
+model PipelineLog {
+  id           Int       @id @default(autoincrement())
+  trigger      String
+  cronExpr     String?
+  startedAt    DateTime  @default(now()) @db.Timestamptz
+  finishedAt   DateTime? @db.Timestamptz
+  status       String
+  articleCount Int?
+  reportId     Int?
+  error        String?
+
+  @@index([startedAt])
+  @@map("pipeline_logs")
+}

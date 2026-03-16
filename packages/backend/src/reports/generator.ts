@@ -16,7 +16,7 @@ export interface GeneratedReport {
   synthesis: Synthesis;
 }
 
-export async function runPipeline(): Promise<GeneratedReport> {
+export async function runPipeline(): Promise<GeneratedReport | null> {
   console.log('--- Pipeline started ---');
 
   // 1. Fetch RSS feeds
@@ -26,48 +26,8 @@ export async function runPipeline(): Promise<GeneratedReport> {
   const uniqueArticles = await deduplicateArticles(rawArticles);
 
   if (uniqueArticles.length === 0) {
-    console.log('No new unique articles found');
-    // Create an empty report
-    const now = new Date();
-    const dd = String(now.getDate()).padStart(2, '0');
-    const mm = String(now.getMonth() + 1).padStart(2, '0');
-    const yyyy = now.getFullYear();
-    const reportKey = `report-${now.toISOString().slice(0, 13).replace(/[T:]/g, '-')}`;
-    const report = await prisma.report.create({
-      data: {
-        reportKey,
-        periodStart: new Date(now.getTime() - 8 * 60 * 60 * 1000),
-        periodEnd: now,
-        articleCount: 0,
-        synthesis: {
-          title: `Báo cáo ngày: ${dd}/${mm}/${yyyy} - Không có bài viết mới`,
-          keyDevelopments: [],
-          priceDrivers: [],
-          supplyDemandSignals: [],
-          geopoliticalFactors: [],
-          outlook: 'No new articles found in this period.',
-          expertAnalysis: '',
-          predictions: { shortTerm: '', mediumTerm: '', keyLevels: '' },
-          riskAssessment: [],
-          vietnamMarket: {
-            domesticPolicy: [],
-            pvnOperations: [],
-            electricitySupplyDemand: '',
-            coalImports: '',
-            lngProjects: '',
-            renewableTransition: '',
-          },
-        },
-      },
-    });
-
-    return {
-      id: report.id,
-      reportKey: report.reportKey,
-      generatedAt: report.generatedAt,
-      articleCount: 0,
-      synthesis: report.synthesis as unknown as Synthesis,
-    };
+    console.log('No new unique articles found, skipping report generation');
+    return null;
   }
 
   // 3. Extract full article content
@@ -92,6 +52,7 @@ export async function runPipeline(): Promise<GeneratedReport> {
       title: a.title,
       content: a.content,
       source: a.source,
+      published: a.published,
     }))
   );
 
@@ -110,7 +71,10 @@ export async function runPipeline(): Promise<GeneratedReport> {
     storedArticles.map((a) => ({
       title: a.title,
       summary: summaries.find((s) => s.id === a.id)?.summary ?? '',
+      content: a.content,
       source: a.source,
+      url: a.url,
+      published: a.published,
     }))
   );
 

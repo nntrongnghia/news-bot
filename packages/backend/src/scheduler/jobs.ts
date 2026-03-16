@@ -8,7 +8,11 @@ export function startScheduler() {
       console.log(`[Scheduler] Running pipeline at ${new Date().toISOString()}`);
       try {
         const report = await runPipeline();
-        console.log(`[Scheduler] Report ${report.reportKey} generated`);
+        if (report) {
+          console.log(`[Scheduler] Report ${report.reportKey} generated`);
+        } else {
+          console.log('[Scheduler] No new articles, skipping report');
+        }
       } catch (err) {
         console.error('[Scheduler] Pipeline failed:', err);
       }

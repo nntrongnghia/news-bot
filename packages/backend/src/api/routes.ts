@@ -1,6 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import { prisma } from '../db/index.js';
 import { runPipeline } from '../reports/generator.js';
+import { config } from '../config.js';
 
 // Simple in-memory rate limiter: 5 feedback submissions per hour per IP
 const feedbackRateLimit = new Map<string, number[]>();
@@ -88,7 +89,15 @@ export async function registerRoutes(app: FastifyInstance) {
     async (req) => {
       const range = req.query.range || '1mo';
       const symbol = req.query.symbol || 'CL=F'; // WTI Crude
-      const interval = range === '1d' ? '15m' : range === '5d' ? '1h' : '1d';
+      const intervalMap: Record<string, string> = {
+        '1d': '5m',
+        '5d': '30m',
+        '1mo': '1h',
+        '3mo': '1d',
+        '6mo': '1d',
+        '1y': '1d',
+      };
+      const interval = intervalMap[range] || '1d';
 
       const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?range=${range}&interval=${interval}`;
       const res = await fetch(url, {
@@ -165,8 +174,15 @@ export async function registerRoutes(app: FastifyInstance) {
   );
 
   // Manual pipeline trigger
-  app.post('/api/pipeline/run', async () => {
+  app.post('/api/pipeline/run', async (req, reply) => {
+    const apiKey = req.headers['x-api-key'];
+    if (apiKey !== config.pipelineApiKey) {
+      return reply.status(401).send({ error: 'Invalid API key' });
+    }
     const report = await runPipeline();
+    if (!report) {
+      return { message: 'No new articles found', skipped: true };
+    }
     return report;
   });
 }

@@ -12,8 +12,10 @@
     "pipeline": "curl -s -X POST http://localhost:8000/api/pipeline/run | node -e \"process.stdin.resume(); let d=''; process.stdin.on('data',c=>d+=c); process.stdin.on('end',()=>{const r=JSON.parse(d); console.log('Report:', r.reportKey, '| Articles:', r.articleCount)})\""
   },
   "dependencies": {
+    "@fastify/cors": "^11.2.0",
     "@mozilla/readability": "^0.6.0",
     "@prisma/client": "^6",
+    "better-auth": "^1.5.5",
     "dotenv": "^16",
     "fastify": "^5",
     "jsdom": "^29.0.0",

@@ -1,5 +1,17 @@
 const BASE_URL = '/api';
 
+async function apiFetch(url: string, options?: RequestInit): Promise<Response> {
+  const res = await fetch(url, {
+    ...options,
+    credentials: 'include',
+  });
+  if (res.status === 401) {
+    window.location.href = '/login';
+    throw new Error('Not authenticated');
+  }
+  return res;
+}
+
 export interface Article {
   id: number;
   url: string;
@@ -51,21 +63,21 @@ export interface Report {
 }
 
 export async function fetchLatestReport(): Promise<Report | null> {
-  const res = await fetch(`${BASE_URL}/reports/latest`);
+  const res = await apiFetch(`${BASE_URL}/reports/latest`);
   const data = await res.json();
   if (data.error) return null;
   return data;
 }
 
 export async function fetchReport(id: number): Promise<Report | null> {
-  const res = await fetch(`${BASE_URL}/reports/${id}`);
+  const res = await apiFetch(`${BASE_URL}/reports/${id}`);
   const data = await res.json();
   if (data.error) return null;
   return data;
 }
 
 export async function fetchReportsByDate(date: string): Promise<Report[]> {
-  const res = await fetch(`${BASE_URL}/reports?date=${date}`);
+  const res = await apiFetch(`${BASE_URL}/reports?date=${date}`);
   return res.json();
 }
 
@@ -75,7 +87,7 @@ export async function fetchTodaysReports(): Promise<Report[]> {
 }
 
 export async function fetchRecentReports(limit: number = 20): Promise<Report[]> {
-  const res = await fetch(`${BASE_URL}/reports?limit=${limit}`);
+  const res = await apiFetch(`${BASE_URL}/reports?limit=${limit}`);
   return res.json();
 }
 
@@ -93,7 +105,7 @@ export interface CrudePriceData {
 }
 
 export async function fetchCrudePrices(range: string = '1mo', symbol: string = 'CL=F'): Promise<CrudePriceData | null> {
-  const res = await fetch(`${BASE_URL}/crude-prices?range=${range}&symbol=${encodeURIComponent(symbol)}`);
+  const res = await apiFetch(`${BASE_URL}/crude-prices?range=${range}&symbol=${encodeURIComponent(symbol)}`);
   const data = await res.json();
   if (data.error) return null;
   return data;
@@ -107,7 +119,7 @@ export interface FeedbackInput {
 }
 
 export async function submitFeedback(input: FeedbackInput): Promise<{ id: number }> {
-  const res = await fetch(`${BASE_URL}/feedback`, {
+  const res = await apiFetch(`${BASE_URL}/feedback`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(input),
@@ -120,6 +132,6 @@ export async function submitFeedback(input: FeedbackInput): Promise<{ id: number
 }
 
 export async function triggerPipeline(): Promise<Report> {
-  const res = await fetch(`${BASE_URL}/pipeline/run`, { method: 'POST' });
+  const res = await apiFetch(`${BASE_URL}/pipeline/run`, { method: 'POST' });
   return res.json();
 }

@@ -1,7 +1,8 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import type { ReactNode } from 'react';
 import { useTheme } from '../hooks/useTheme';
 import FeedbackModal from './FeedbackForm';
+import { authClient } from '../lib/auth-client';
 
 function formatDate() {
   return new Date().toLocaleDateString('vi-VN', {
@@ -14,6 +15,13 @@ function formatDate() {
 
 export default function Layout({ children }: { children: ReactNode }) {
   const { theme, toggleTheme } = useTheme();
+  const { data: session } = authClient.useSession();
+  const navigate = useNavigate();
+
+  async function handleLogout() {
+    await authClient.signOut();
+    navigate('/login');
+  }
 
   return (
     <div className="min-h-screen bg-stone-50 dark:bg-[#141414] text-neutral-800 dark:text-neutral-200 font-sans">
@@ -31,6 +39,20 @@ export default function Layout({ children }: { children: ReactNode }) {
             <span className="text-[13px] text-neutral-700 dark:text-neutral-300 hidden sm:block">
               {formatDate()}
             </span>
+            {session?.user.role === 'admin' && (
+              <Link
+                to="/admin"
+                className="text-xs uppercase tracking-wider text-neutral-600 dark:text-neutral-400 hover:text-neutral-800 dark:hover:text-neutral-200 transition-colors"
+              >
+                Quản trị
+              </Link>
+            )}
+            <button
+              onClick={handleLogout}
+              className="text-xs uppercase tracking-wider text-neutral-600 dark:text-neutral-400 hover:text-neutral-800 dark:hover:text-neutral-200 transition-colors"
+            >
+              Đăng xuất
+            </button>
             <button
               onClick={toggleTheme}
               className="p-2 rounded-lg text-neutral-700 dark:text-neutral-300 hover:bg-stone-100 dark:hover:bg-neutral-900 transition-colors"

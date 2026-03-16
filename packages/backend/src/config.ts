@@ -5,6 +5,10 @@ const envSchema = z.object({
   OPENROUTER_API_KEY: z.string().min(1),
   DATABASE_URL: z.string().min(1),
   PORT: z.coerce.number().default(8000),
+  BETTER_AUTH_SECRET: z.string().min(32),
+  AUTH_ADMIN_EMAIL: z.string().default('admin@local.dev'),
+  AUTH_ADMIN_PASSWORD: z.string().default('changeme'),
+  TRUSTED_ORIGINS: z.string().default('http://localhost:3000'),
 });
 
 const env = envSchema.parse(process.env);
@@ -13,6 +17,10 @@ export const config = {
   openrouterApiKey: env.OPENROUTER_API_KEY,
   databaseUrl: env.DATABASE_URL,
   port: env.PORT,
+  betterAuthSecret: env.BETTER_AUTH_SECRET,
+  authAdminEmail: env.AUTH_ADMIN_EMAIL,
+  authAdminPassword: env.AUTH_ADMIN_PASSWORD,
+  trustedOrigins: env.TRUSTED_ORIGINS.split(',').map((s) => s.trim()),
 
   feeds: [
     'https://oilprice.com/rss/main',

@@ -2,6 +2,25 @@ import { FastifyInstance } from 'fastify';
 import { prisma } from '../db/index.js';
 import { runPipeline } from '../reports/generator.js';
 
+// Simple in-memory rate limiter: 5 feedback submissions per hour per IP
+const feedbackRateLimit = new Map<string, number[]>();
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const hourAgo = now - 60 * 60 * 1000;
+  const timestamps = (feedbackRateLimit.get(ip) || []).filter(t => t > hourAgo);
+  feedbackRateLimit.set(ip, timestamps);
+  return timestamps.length >= 5;
+}
+
+function recordRequest(ip: string) {
+  const now = Date.now();
+  const hourAgo = now - 60 * 60 * 1000;
+  const timestamps = (feedbackRateLimit.get(ip) || []).filter(t => t > hourAgo);
+  timestamps.push(now);
+  feedbackRateLimit.set(ip, timestamps);
+}
+
 export async function registerRoutes(app: FastifyInstance) {
   // Get latest report
   app.get('/api/reports/latest', async () => {
@@ -37,10 +56,11 @@ export async function registerRoutes(app: FastifyInstance) {
   });
 
   // Get reports by date
-  app.get<{ Querystring: { date?: string } }>(
+  app.get<{ Querystring: { date?: string; limit?: string } }>(
     '/api/reports',
     async (req) => {
       const dateStr = req.query.date;
+      const limit = req.query.limit ? parseInt(req.query.limit, 10) : undefined;
       let where = {};
 
       if (dateStr) {
@@ -55,9 +75,92 @@ export async function registerRoutes(app: FastifyInstance) {
         where,
         orderBy: { generatedAt: 'desc' },
         include: { articles: true },
+        ...(limit && limit > 0 ? { take: limit } : {}),
       });
 
       return reports;
+    }
+  );
+
+  // Crude oil price data (proxy Yahoo Finance)
+  app.get<{ Querystring: { range?: string; symbol?: string } }>(
+    '/api/crude-prices',
+    async (req) => {
+      const range = req.query.range || '1mo';
+      const symbol = req.query.symbol || 'CL=F'; // WTI Crude
+      const interval = range === '1d' ? '15m' : range === '5d' ? '1h' : '1d';
+
+      const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?range=${range}&interval=${interval}`;
+      const res = await fetch(url, {
+        headers: { 'User-Agent': 'Mozilla/5.0' },
+      });
+
+      if (!res.ok) {
+        return { error: 'Failed to fetch price data', status: res.status };
+      }
+
+      const data = await res.json() as {
+        chart: {
+          result: Array<{
+            meta: { regularMarketPrice: number; previousClose: number; currency: string; symbol: string };
+            timestamp: number[];
+            indicators: { quote: Array<{ close: (number | null)[] }> };
+          }>;
+        };
+      };
+      const result = data.chart.result?.[0];
+      if (!result) {
+        return { error: 'No data available' };
+      }
+
+      const timestamps = result.timestamp || [];
+      const closes = result.indicators.quote[0]?.close || [];
+
+      const prices = timestamps.map((t: number, i: number) => ({
+        date: new Date(t * 1000).toISOString(),
+        price: closes[i] != null ? Math.round(closes[i]! * 100) / 100 : null,
+      })).filter((p: { price: number | null }) => p.price !== null);
+
+      return {
+        symbol: result.meta.symbol,
+        currency: result.meta.currency,
+        currentPrice: result.meta.regularMarketPrice,
+        previousClose: result.meta.previousClose,
+        prices,
+      };
+    }
+  );
+
+  // Submit feedback
+  app.post<{ Body: { name?: string; email?: string; category?: string; message?: string } }>(
+    '/api/feedback',
+    async (req, reply) => {
+      const { name, email, category, message } = req.body || {};
+
+      if (!message || typeof message !== 'string' || message.trim().length === 0) {
+        return reply.status(400).send({ error: 'Message is required' });
+      }
+      if (message.length > 5000) {
+        return reply.status(400).send({ error: 'Message must be under 5000 characters' });
+      }
+
+      const ip = req.ip;
+      if (isRateLimited(ip)) {
+        return reply.status(429).send({ error: 'Too many submissions. Please try again later.' });
+      }
+
+      recordRequest(ip);
+
+      const feedback = await prisma.feedback.create({
+        data: {
+          name: name?.trim() || null,
+          email: email?.trim() || null,
+          category: category?.trim() || null,
+          message: message.trim(),
+        },
+      });
+
+      return feedback;
     }
   );
 

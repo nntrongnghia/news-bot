@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
-import { fetchTodaysReports, fetchLatestReport, type Report } from '../api/client';
+import { fetchTodaysReports, fetchLatestReport, fetchRecentReports, type Report } from '../api/client';
 import ReportCard from '../components/ReportCard';
 import Synthesis from '../components/Synthesis';
+import PriceChart from '../components/PriceChart';
 import ErrorBoundary from '../components/ErrorBoundary';
 
 function SectionHeader({ children }: { children: React.ReactNode }) {
   return (
-    <h2 className="text-[11px] uppercase tracking-[0.1em] font-semibold text-neutral-500 dark:text-neutral-400 pb-2 border-b-2 border-neutral-800 dark:border-neutral-200 mb-6">
+    <h2 className="text-[11px] uppercase tracking-[0.1em] font-semibold text-neutral-700 dark:text-neutral-300 pb-2 border-b-2 border-neutral-800 dark:border-neutral-200 mb-6">
       {children}
     </h2>
   );
@@ -46,6 +47,7 @@ function DashboardSkeleton() {
 
 export default function Dashboard() {
   const [reports, setReports] = useState<Report[]>([]);
+  const [previousReports, setPreviousReports] = useState<Report[]>([]);
   const [latest, setLatest] = useState<Report | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -53,12 +55,19 @@ export default function Dashboard() {
   useEffect(() => {
     async function load() {
       try {
-        const [todaysReports, latestReport] = await Promise.all([
+        const [todaysReports, latestReport, recentReports] = await Promise.all([
           fetchTodaysReports(),
           fetchLatestReport(),
+          fetchRecentReports(20),
         ]);
         setReports(todaysReports);
         setLatest(latestReport);
+
+        const todayStr = new Date().toISOString().slice(0, 10);
+        const older = recentReports.filter(
+          (r) => r.generatedAt.slice(0, 10) !== todayStr
+        );
+        setPreviousReports(older);
       } catch (err) {
         console.error('Failed to load reports:', err);
         setError(err instanceof Error ? err.message : 'Lỗi khi tải báo cáo');
@@ -83,9 +92,22 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-10">
+      <section>
+        <SectionHeader>Giá Dầu Thô</SectionHeader>
+        <ErrorBoundary>
+          <PriceChart />
+        </ErrorBoundary>
+      </section>
+
       {latest?.synthesis && (
         <section>
           <SectionHeader>Tin Tức Thị Trường Mới Nhất</SectionHeader>
+          <p className="text-xs text-neutral-500 dark:text-neutral-400 -mt-4 mb-4">
+            {new Date(latest.generatedAt).toLocaleString('vi-VN', {
+              dateStyle: 'full',
+              timeStyle: 'short',
+            })}
+          </p>
           <div className="max-w-4xl">
             <ErrorBoundary>
               <Synthesis synthesis={latest.synthesis} />
@@ -97,7 +119,7 @@ export default function Dashboard() {
       <section>
         <SectionHeader>Báo Cáo Hôm Nay</SectionHeader>
         {reports.length === 0 ? (
-          <p className="text-neutral-500 dark:text-neutral-400">Chưa có báo cáo nào được tạo hôm nay.</p>
+          <p className="text-neutral-700 dark:text-neutral-300">Chưa có báo cáo nào được tạo hôm nay.</p>
         ) : (
           <div className="grid gap-0 md:grid-cols-2 md:gap-x-8">
             {reports.map((report) => (
@@ -106,6 +128,18 @@ export default function Dashboard() {
           </div>
         )}
       </section>
+
+      {previousReports.length > 0 && (
+        <section>
+          <SectionHeader>Báo Cáo Trước Đó</SectionHeader>
+          <div className="grid gap-0 md:grid-cols-2 md:gap-x-8">
+            {previousReports.map((report) => (
+              <ReportCard key={report.id} report={report} />
+            ))}
+          </div>
+        </section>
+      )}
+
     </div>
   );
 }

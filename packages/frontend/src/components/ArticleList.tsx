@@ -10,7 +10,7 @@ export default function ArticleList({ articles }: Props) {
   const [expandedId, setExpandedId] = useState<number | null>(null);
 
   if (articles.length === 0) {
-    return <p className="text-neutral-500 dark:text-neutral-400 text-base">Không có bài viết trong báo cáo này.</p>;
+    return <p className="text-neutral-700 dark:text-neutral-300 text-base">Không có bài viết trong báo cáo này.</p>;
   }
 
   return (
@@ -27,13 +27,13 @@ export default function ArticleList({ articles }: Props) {
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-3 mb-1">
                   {article.source && (
-                    <span className="text-[11px] uppercase tracking-[0.1em] font-semibold text-neutral-500 dark:text-neutral-400">
+                    <span className="text-[11px] uppercase tracking-[0.1em] font-semibold text-neutral-700 dark:text-neutral-300">
                       {article.source}
                     </span>
                   )}
                   {article.published && (
-                    <span className="text-[13px] text-neutral-500 dark:text-neutral-400">
-                      {format(new Date(article.published), 'MMM d, h:mm a')}
+                    <span className="text-[13px] text-neutral-700 dark:text-neutral-300">
+                      {format(new Date(article.published), 'HH:mm dd/MM/yyyy')}
                     </span>
                   )}
                 </div>
@@ -42,7 +42,7 @@ export default function ArticleList({ articles }: Props) {
                 </h4>
               </div>
               <svg
-                className={`w-4 h-4 mt-2 text-neutral-400 shrink-0 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                className={`w-4 h-4 mt-2 text-neutral-600 shrink-0 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -53,7 +53,7 @@ export default function ArticleList({ articles }: Props) {
             </div>
 
             {!isExpanded && article.summary && (
-              <p className="mt-1.5 text-base text-neutral-500 dark:text-neutral-400 line-clamp-2 max-w-[65ch] leading-relaxed">
+              <p className="mt-1.5 text-base text-neutral-700 dark:text-neutral-300 line-clamp-2 max-w-[65ch] leading-relaxed">
                 {article.summary}
               </p>
             )}
@@ -61,20 +61,20 @@ export default function ArticleList({ articles }: Props) {
             {isExpanded && (
               <div className="mt-3 space-y-3">
                 {article.content && (
-                  <div className="text-base text-neutral-600 dark:text-neutral-300 leading-relaxed whitespace-pre-line max-h-[32rem] overflow-y-auto max-w-[65ch]">
+                  <div className="text-base text-neutral-700 dark:text-neutral-300 leading-relaxed whitespace-pre-line max-h-[32rem] overflow-y-auto max-w-[65ch]">
                     {article.content}
                   </div>
                 )}
                 {article.summary && (
-                  <div className="text-base text-neutral-500 dark:text-neutral-400 italic max-w-[65ch]">
-                    <span className="font-medium not-italic text-neutral-600 dark:text-neutral-300">Tóm tắt:</span> {article.summary}
+                  <div className="text-base text-neutral-700 dark:text-neutral-300 italic max-w-[65ch]">
+                    <span className="font-medium not-italic text-neutral-700 dark:text-neutral-300">Tóm tắt:</span> {article.summary}
                   </div>
                 )}
                 <a
                   href={article.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-[13px] text-neutral-500 dark:text-neutral-400 hover:text-neutral-800 dark:hover:text-neutral-200"
+                  className="inline-flex items-center gap-1 text-[13px] text-neutral-700 dark:text-neutral-300 hover:text-neutral-800 dark:hover:text-neutral-200"
                 >
                   Đọc bài gốc
                   <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

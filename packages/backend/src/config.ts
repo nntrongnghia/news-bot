@@ -21,7 +21,6 @@ export const config = {
     'https://www.investing.com/rss/news.rss',
     'https://feeds.bloomberg.com/markets/news.rss',
     'https://www.ft.com/global-economy?format=rss',
-    'https://pvj.com.vn/index.php/TCDK/gateway/plugin/WebFeedGatewayPlugin/rss',
     'https://en.vneconomy.vn/tin-moi.rss',
     // Vietnam energy feeds
     'https://petrotimes.vn/rss_feed/trang-chu',

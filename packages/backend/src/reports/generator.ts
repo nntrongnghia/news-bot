@@ -29,6 +29,9 @@ export async function runPipeline(): Promise<GeneratedReport> {
     console.log('No new unique articles found');
     // Create an empty report
     const now = new Date();
+    const dd = String(now.getDate()).padStart(2, '0');
+    const mm = String(now.getMonth() + 1).padStart(2, '0');
+    const yyyy = now.getFullYear();
     const reportKey = `report-${now.toISOString().slice(0, 13).replace(/[T:]/g, '-')}`;
     const report = await prisma.report.create({
       data: {
@@ -37,6 +40,7 @@ export async function runPipeline(): Promise<GeneratedReport> {
         periodEnd: now,
         articleCount: 0,
         synthesis: {
+          title: `Báo cáo ngày: ${dd}/${mm}/${yyyy} - Không có bài viết mới`,
           keyDevelopments: [],
           priceDrivers: [],
           supplyDemandSignals: [],
@@ -112,6 +116,10 @@ export async function runPipeline(): Promise<GeneratedReport> {
 
   // 8. Create report and link articles
   const now = new Date();
+  const dd = String(now.getDate()).padStart(2, '0');
+  const mm = String(now.getMonth() + 1).padStart(2, '0');
+  const yyyy = now.getFullYear();
+  synthesis.title = `Báo cáo ngày: ${dd}/${mm}/${yyyy} - ${synthesis.title}`;
   const reportKey = `report-${now.toISOString().slice(0, 13).replace(/[T:]/g, '-')}`;
   const report = await prisma.report.create({
     data: {

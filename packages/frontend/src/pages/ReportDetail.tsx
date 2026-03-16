@@ -67,7 +67,7 @@ export default function ReportDetail() {
     return (
       <div className="text-center py-12">
         <p className="text-red-500 dark:text-red-400 mb-4">{error}</p>
-        <Link to="/" className="text-neutral-500 dark:text-neutral-400 hover:text-neutral-800 dark:hover:text-neutral-200">
+        <Link to="/" className="text-neutral-700 dark:text-neutral-300 hover:text-neutral-800 dark:hover:text-neutral-200">
           Quay lại Bảng Điều Khiển
         </Link>
       </div>
@@ -77,8 +77,8 @@ export default function ReportDetail() {
   if (!report) {
     return (
       <div className="text-center py-12">
-        <p className="text-neutral-500 dark:text-neutral-400 mb-4">Không tìm thấy báo cáo.</p>
-        <Link to="/" className="text-neutral-500 dark:text-neutral-400 hover:text-neutral-800 dark:hover:text-neutral-200">
+        <p className="text-neutral-700 dark:text-neutral-300 mb-4">Không tìm thấy báo cáo.</p>
+        <Link to="/" className="text-neutral-700 dark:text-neutral-300 hover:text-neutral-800 dark:hover:text-neutral-200">
           Quay lại Bảng Điều Khiển
         </Link>
       </div>
@@ -88,14 +88,14 @@ export default function ReportDetail() {
   return (
     <div className="space-y-10">
       <div>
-        <Link to="/" className="text-[13px] text-neutral-500 dark:text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300">
+        <Link to="/" className="text-[13px] text-neutral-700 dark:text-neutral-300 hover:text-neutral-600 dark:hover:text-neutral-300">
           &larr; Quay lại
         </Link>
         <h1 className="font-serif text-3xl font-bold tracking-[-0.01em] text-neutral-800 dark:text-neutral-200 mt-2">
           {report.synthesis?.title || report.reportKey}
         </h1>
-        <p className="text-[13px] text-neutral-500 dark:text-neutral-400 mt-1">
-          {format(new Date(report.generatedAt), 'MMMM d, yyyy h:mm a')}
+        <p className="text-[13px] text-neutral-700 dark:text-neutral-300 mt-1">
+          {format(new Date(report.generatedAt), 'HH:mm dd/MM/yyyy')}
           <span className="mx-1.5">&middot;</span>
           {report.articleCount ?? 0} bài viết
         </p>
@@ -103,7 +103,7 @@ export default function ReportDetail() {
 
       {report.synthesis && (
         <section>
-          <h2 className="text-[11px] uppercase tracking-[0.1em] font-semibold text-neutral-500 dark:text-neutral-400 pb-2 border-b-2 border-neutral-800 dark:border-neutral-200 mb-6">
+          <h2 className="text-[11px] uppercase tracking-[0.1em] font-semibold text-neutral-700 dark:text-neutral-300 pb-2 border-b-2 border-neutral-800 dark:border-neutral-200 mb-6">
             Tổng Hợp Thị Trường
           </h2>
           <div className="max-w-4xl">
@@ -115,7 +115,7 @@ export default function ReportDetail() {
       )}
 
       <section>
-        <h2 className="text-[11px] uppercase tracking-[0.1em] font-semibold text-neutral-500 dark:text-neutral-400 pb-2 border-b-2 border-neutral-800 dark:border-neutral-200 mb-6">
+        <h2 className="text-[11px] uppercase tracking-[0.1em] font-semibold text-neutral-700 dark:text-neutral-300 pb-2 border-b-2 border-neutral-800 dark:border-neutral-200 mb-6">
           Bài Viết
         </h2>
         <ErrorBoundary>

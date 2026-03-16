@@ -74,6 +74,51 @@ export async function fetchTodaysReports(): Promise<Report[]> {
   return fetchReportsByDate(today);
 }
 
+export async function fetchRecentReports(limit: number = 20): Promise<Report[]> {
+  const res = await fetch(`${BASE_URL}/reports?limit=${limit}`);
+  return res.json();
+}
+
+export interface CrudePricePoint {
+  date: string;
+  price: number;
+}
+
+export interface CrudePriceData {
+  symbol: string;
+  currency: string;
+  currentPrice: number;
+  previousClose: number;
+  prices: CrudePricePoint[];
+}
+
+export async function fetchCrudePrices(range: string = '1mo', symbol: string = 'CL=F'): Promise<CrudePriceData | null> {
+  const res = await fetch(`${BASE_URL}/crude-prices?range=${range}&symbol=${encodeURIComponent(symbol)}`);
+  const data = await res.json();
+  if (data.error) return null;
+  return data;
+}
+
+export interface FeedbackInput {
+  name?: string;
+  email?: string;
+  category?: string;
+  message: string;
+}
+
+export async function submitFeedback(input: FeedbackInput): Promise<{ id: number }> {
+  const res = await fetch(`${BASE_URL}/feedback`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(input),
+  });
+  if (!res.ok) {
+    const data = await res.json();
+    throw new Error(data.error || 'Failed to submit feedback');
+  }
+  return res.json();
+}
+
 export async function triggerPipeline(): Promise<Report> {
   const res = await fetch(`${BASE_URL}/pipeline/run`, { method: 'POST' });
   return res.json();

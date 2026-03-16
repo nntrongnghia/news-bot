@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import type { ReactNode } from 'react';
 import { useTheme } from '../hooks/useTheme';
+import FeedbackModal from './FeedbackForm';
 
 function formatDate() {
   return new Date().toLocaleDateString('vi-VN', {
@@ -22,17 +23,17 @@ export default function Layout({ children }: { children: ReactNode }) {
             <Link to="/" className="text-2xl font-serif font-bold tracking-[-0.01em] text-neutral-800 dark:text-neutral-200">
               Tin tức xăng dầu
             </Link>
-            <p className="text-[11px] uppercase tracking-[0.1em] text-neutral-500 dark:text-neutral-400 mt-0.5">
+            <p className="text-[11px] uppercase tracking-[0.1em] text-neutral-700 dark:text-neutral-300 mt-0.5">
               Tổng hợp tin tức, phân tích thị trường xăng dầu Việt Nam và thế giới
             </p>
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-[13px] text-neutral-500 dark:text-neutral-400 hidden sm:block">
+            <span className="text-[13px] text-neutral-700 dark:text-neutral-300 hidden sm:block">
               {formatDate()}
             </span>
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-lg text-neutral-500 dark:text-neutral-400 hover:bg-stone-100 dark:hover:bg-neutral-900 transition-colors"
+              className="p-2 rounded-lg text-neutral-700 dark:text-neutral-300 hover:bg-stone-100 dark:hover:bg-neutral-900 transition-colors"
               aria-label="Toggle theme"
             >
               {theme === 'dark' ? (
@@ -49,6 +50,12 @@ export default function Layout({ children }: { children: ReactNode }) {
         </div>
       </header>
       <main className="mx-auto max-w-6xl px-6 lg:px-8 py-8">{children}</main>
+      <footer className="border-t border-neutral-200 dark:border-neutral-800">
+        <div className="mx-auto max-w-6xl px-6 lg:px-8 py-6">
+          <p className="text-xs text-neutral-500 dark:text-neutral-400">© 2026 Tin tức xăng dầu</p>
+        </div>
+      </footer>
+      <FeedbackModal />
     </div>
   );
 }

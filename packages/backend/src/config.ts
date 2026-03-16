@@ -32,13 +32,18 @@ export const config = {
     'https://feeds.bloomberg.com/markets/news.rss',
     'https://www.ft.com/global-economy?format=rss',
     'https://en.vneconomy.vn/tin-moi.rss',
-    // Vietnam energy feeds
     'https://petrotimes.vn/rss_feed/trang-chu',
     'https://nangluongvietnam.vn/rss_feed/',
     'https://vnexpress.net/rss/kinh-doanh.rss',
     'https://vnexpress.net/rss/thoi-su.rss',
     'https://vnexpress.net/rss/the-gioi.rss',
     'https://vnexpress.net/rss/tin-noi-bat.rss',
+    'https://thanhnien.vn/rss/thoi-su.rss',
+    'https://thanhnien.vn/rss/the-gioi.rss',
+    'https://thanhnien.vn/rss/kinh-te.rss',
+    'https://tuoitre.vn/rss/the-gioi.rss',
+    'https://tuoitre.vn/rss/kinh-doanh.rss',
+    'https://tuoitre.vn/rss/thoi-su.rss',
   ],
 
   keywords: {

@@ -26,12 +26,12 @@ export interface PricePrediction {
 }
 
 export interface VietnamMarket {
-  domesticPolicy: string[];
-  pvnOperations: string[];
-  electricitySupplyDemand: string;
-  coalImports: string;
-  lngProjects: string;
-  renewableTransition: string;
+  fuelPricing: string[];
+  supplyChain: string[];
+  governmentPolicy: string[];
+  marketDemand: string;
+  marginAnalysis: string;
+  importPrices: string;
 }
 
 export interface SourceRef {
@@ -193,12 +193,12 @@ Trả lời bằng JSON đúng cấu trúc sau:
   },
   "riskAssessment": ["..."],
   "vietnamMarket": {
-    "domesticPolicy": ["..."],
-    "pvnOperations": ["..."],
-    "electricitySupplyDemand": "...",
-    "coalImports": "...",
-    "lngProjects": "...",
-    "renewableTransition": "..."
+    "fuelPricing": ["..."],
+    "supplyChain": ["..."],
+    "governmentPolicy": ["..."],
+    "marketDemand": "...",
+    "marginAnalysis": "...",
+    "importPrices": "..."
   }
 }
 
@@ -215,10 +215,14 @@ Hướng dẫn từng mục:
   + mediumTerm: Dự báo 1-3 tháng, kèm các yếu tố có thể thay đổi kịch bản (catalysts). Nêu rõ xu hướng cấu trúc vs biến động ngắn hạn.
   + keyLevels: Các mức hỗ trợ/kháng cự quan trọng nếu có dữ liệu giá (VD: "Brent hỗ trợ $78, kháng cự $85").
 - riskAssessment: 2-4 rủi ro chính kèm xác suất định tính (VD: "Rủi ro gián đoạn nguồn cung từ Trung Đông — xác suất TRUNG BÌNH, tác động CAO nếu xảy ra").
-- vietnamMarket: Phần phân tích riêng cho thị trường năng lượng Việt Nam. Chỉ điền khi có bài viết liên quan đến Việt Nam (có tiền tố [VN]). Nếu không có dữ liệu, để mảng rỗng [] và chuỗi rỗng "".
-  + domesticPolicy: Chính sách năng lượng trong nước (QHĐ8/PDP8, quy hoạch điện, giá điện, cơ chế mua bán điện trực tiếp DPPA, v.v.)
-  + pvnOperations: Hoạt động của PetroVietnam và các công ty con (PV Gas, PVOIL, PVPower, Petrolimex) — sản lượng, doanh thu, dự án mới.
-- KẾT NỐI TOÀN CẦU - VIỆT NAM: Khi phân tích vietnamMarket, liên hệ các sự kiện toàn cầu tác động đến Việt Nam (VD: giá dầu thế giới tăng → chi phí nhập khẩu nhiên liệu của Việt Nam, quyết định OPEC+ → giá xăng nội địa).`,
+- vietnamMarket: Phân tích thị trường XĂNG DẦU Việt Nam dành cho nhà quản lý chuỗi cây xăng. Chỉ điền khi có bài viết liên quan đến thị trường xăng dầu Việt Nam (có tiền tố [VN]). Nếu không có dữ liệu, để mảng rỗng [] và chuỗi rỗng "".
+  + fuelPricing: Giá bán lẻ xăng dầu hiện tại (RON95-III, E5RON92, DO 0.05S), mức điều chỉnh giá gần nhất, giá cơ sở, so sánh kỳ điều chỉnh trước.
+  + supplyChain: Hoạt động của Petrolimex, PVOIL, PV Oil — tình hình nhập khẩu, tồn kho, phân phối, kế hoạch cung ứng.
+  + governmentPolicy: Chính sách thuế xăng dầu (thuế BVMT, VAT, thuế nhập khẩu), quỹ bình ổn giá (BOG), quy định kinh doanh xăng dầu, nghị định mới.
+  + marketDemand: Nhu cầu tiêu thụ xăng dầu nội địa, xu hướng mùa vụ, tác động từ giá bán lẻ lên lượng tiêu thụ.
+  + marginAnalysis: Biên lợi nhuận bán lẻ xăng dầu, mức chiết khấu cho đại lý/tổng đại lý, chi phí vận hành cây xăng, premium định mức.
+  + importPrices: Giá nhập khẩu xăng dầu thành phẩm (gasoline, diesel), crack spread Singapore, chênh lệch giá CIF vs giá cơ sở.
+- KẾT NỐI TOÀN CẦU - VIỆT NAM: Khi phân tích vietnamMarket, liên hệ giá dầu thô thế giới → giá thành phẩm Singapore → giá cơ sở Việt Nam → giá bán lẻ. Đánh giá tác động lên biên lợi nhuận cây xăng.`,
       },
       {
         role: 'user',
@@ -245,12 +249,12 @@ Hướng dẫn từng mục:
     predictions: { shortTerm: '', mediumTerm: '', keyLevels: '' },
     riskAssessment: [],
     vietnamMarket: {
-      domesticPolicy: [],
-      pvnOperations: [],
-      electricitySupplyDemand: '',
-      coalImports: '',
-      lngProjects: '',
-      renewableTransition: '',
+      fuelPricing: [],
+      supplyChain: [],
+      governmentPolicy: [],
+      marketDemand: '',
+      marginAnalysis: '',
+      importPrices: '',
     },
     sources: [],
   };

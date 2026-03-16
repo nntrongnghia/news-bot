@@ -69,12 +69,12 @@ function TextBlock({ label, text, sources }: { label: string; text?: string; sou
 function hasVietnamContent(vm?: VietnamMarket): boolean {
   if (!vm) return false;
   return (
-    (vm.domesticPolicy?.length > 0) ||
-    (vm.pvnOperations?.length > 0) ||
-    !!vm.electricitySupplyDemand ||
-    !!vm.coalImports ||
-    !!vm.lngProjects ||
-    !!vm.renewableTransition
+    (vm.fuelPricing?.length > 0) ||
+    (vm.supplyChain?.length > 0) ||
+    (vm.governmentPolicy?.length > 0) ||
+    !!vm.marketDemand ||
+    !!vm.marginAnalysis ||
+    !!vm.importPrices
   );
 }
 
@@ -158,14 +158,14 @@ export default function Synthesis({ synthesis: raw }: Props) {
       {/* Vietnam Market */}
       {hasVietnamContent(synthesis.vietnamMarket) && (
         <div>
-          <SectionLabel>Thị Trường Năng Lượng Việt Nam</SectionLabel>
+          <SectionLabel>Thị Trường Xăng Dầu Việt Nam</SectionLabel>
           <div className="space-y-4">
-            <CompactList title="Chính Sách Năng Lượng" items={synthesis.vietnamMarket!.domesticPolicy} sources={synthesis.sources} />
-            <CompactList title="Hoạt Động PVN & Công Ty Con" items={synthesis.vietnamMarket!.pvnOperations} sources={synthesis.sources} />
-            <TextBlock label="Cung Cầu Điện" text={synthesis.vietnamMarket!.electricitySupplyDemand} sources={synthesis.sources} />
-            <TextBlock label="Nhập Khẩu Than" text={synthesis.vietnamMarket!.coalImports} sources={synthesis.sources} />
-            <TextBlock label="Dự Án LNG" text={synthesis.vietnamMarket!.lngProjects} sources={synthesis.sources} />
-            <TextBlock label="Chuyển Dịch Năng Lượng Tái Tạo" text={synthesis.vietnamMarket!.renewableTransition} sources={synthesis.sources} />
+            <CompactList title="Giá Xăng Dầu Bán Lẻ" items={synthesis.vietnamMarket!.fuelPricing} sources={synthesis.sources} />
+            <CompactList title="Chuỗi Cung Ứng" items={synthesis.vietnamMarket!.supplyChain} sources={synthesis.sources} />
+            <CompactList title="Chính Sách & Thuế" items={synthesis.vietnamMarket!.governmentPolicy} sources={synthesis.sources} />
+            <TextBlock label="Nhu Cầu Tiêu Thụ" text={synthesis.vietnamMarket!.marketDemand} sources={synthesis.sources} />
+            <TextBlock label="Biên Lợi Nhuận Bán Lẻ" text={synthesis.vietnamMarket!.marginAnalysis} sources={synthesis.sources} />
+            <TextBlock label="Giá Nhập Khẩu & Crack Spread" text={synthesis.vietnamMarket!.importPrices} sources={synthesis.sources} />
           </div>
         </div>
       )}

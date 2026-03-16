@@ -30,12 +30,12 @@ export interface PricePrediction {
 }
 
 export interface VietnamMarket {
-  domesticPolicy: string[];
-  pvnOperations: string[];
-  electricitySupplyDemand: string;
-  coalImports: string;
-  lngProjects: string;
-  renewableTransition: string;
+  fuelPricing: string[];
+  supplyChain: string[];
+  governmentPolicy: string[];
+  marketDemand: string;
+  marginAnalysis: string;
+  importPrices: string;
 }
 
 export interface SourceRef {

@@ -4,11 +4,11 @@ import { z } from 'zod';
 const envSchema = z.object({
   OPENROUTER_API_KEY: z.string().min(1),
   DATABASE_URL: z.string().min(1),
-  PORT: z.coerce.number().default(8000),
+  PORT: z.coerce.number().default(8806),
   BETTER_AUTH_SECRET: z.string().min(32),
   AUTH_ADMIN_EMAIL: z.string().default('admin@local.dev'),
   AUTH_ADMIN_PASSWORD: z.string().default('changeme'),
-  TRUSTED_ORIGINS: z.string().default('http://localhost:3000'),
+  TRUSTED_ORIGINS: z.string().default('http://localhost:3306'),
   PIPELINE_API_KEY: z.string().min(16),
 });
 
@@ -48,22 +48,57 @@ export const config = {
 
   keywords: {
     include: [
-      'crude oil', 'brent', 'wti', 'natural gas', 'lng', 'opec',
-      'petroleum', 'fuel', 'gasoline', 'diesel', 'energy market',
-      'oil price', 'gas price', 'refinery', 'pipeline', 'barrel',
-      'energy crisis', 'oil production', 'shale', 'offshore',
-      // Vietnam companies
+      // English — Crude & Products
+      'crude oil', 'brent', 'wti', 'dubai crude', 'murban', 'natural gas', 'lng', 'lpg',
+      'petroleum', 'gasoline', 'diesel', 'jet fuel', 'fuel oil', 'heating oil',
+      'kerosene', 'naphtha', 'condensate',
+      // English — OPEC & Organizations
+      'opec', 'saudi aramco', 'production quota', 'output cut', 'supply cut',
+      // English — Market & Trading
+      'energy market', 'oil price', 'gas price', 'oil futures', 'gas futures',
+      'crack spread', 'contango', 'backwardation', 'oil inventory', 'crude inventory',
+      'strategic petroleum reserve', 'oil demand', 'oil supply', 'oil export', 'oil import', 'barrel',
+      // English — Infrastructure & Operations
+      'refinery', 'oil pipeline', 'gas pipeline', 'lng terminal', 'drilling rig',
+      'oil production', 'shale', 'offshore', 'upstream', 'downstream', 'midstream', 'tanker',
+      // English — Geopolitical & Policy
+      'energy crisis', 'energy sanction', 'oil sanction', 'energy security',
+      'oil embargo', 'energy transition',
+      // English — Nations & Regions (producers & chokepoints)
+      'saudi arabia', 'russia oil', 'russia gas', 'iran oil', 'iraq oil', 'libya oil',
+      'nigeria oil', 'venezuela oil', 'kuwait oil', 'uae oil', 'qatar gas', 'norway oil',
+      'guyana oil', 'permian basin', 'strait of hormuz', 'suez canal', 'gulf of mexico',
+      'north sea', 'caspian', 'arctic drilling', 'middle east oil', 'persian gulf',
+      // Vietnamese — Nations & Regions (diacritics)
+      'ả rập xê út', 'trung đông', 'biển đông', 'nga dầu', 'iran dầu',
+      // Vietnamese — Nations & Regions (ASCII)
+      'a rap xe ut', 'trung dong', 'bien dong',
+      // Vietnam companies & projects
       'petrovietnam', 'pvn', 'evn', 'pv gas', 'petrolimex', 'pvpower', 'pvoil',
-      // Vietnamese terms (with diacritics)
+      'nghi son', 'nsrp', 'binh son', 'pvep', 'pv drilling', 'genco',
+      // Vietnamese (diacritics)
       'dầu khí', 'năng lượng', 'điện lực', 'thủy điện', 'nhiệt điện', 'khí đốt',
-      // Vietnamese terms (ASCII)
-      'dau khi', 'nang luong', 'dien luc', 'thuy dien', 'nhiet dien',
-      // English Vietnam terms
-      'vietnam energy', 'vietnam oil', 'vietnam gas', 'vietnam electricity', 'vietnam power', 'vietnam lng',
+      'xăng dầu', 'giá dầu', 'giá xăng', 'lọc dầu', 'dầu thô', 'khí thiên nhiên',
+      'nhà máy lọc dầu', 'khai thác dầu', 'mỏ dầu', 'mỏ khí', 'quỹ bình ổn',
+      'an ninh năng lượng', 'chuyển đổi năng lượng', 'điện khí', 'quy hoạch điện',
+      // Vietnamese (ASCII normalized)
+      'dau khi', 'nang luong', 'dien luc', 'thuy dien', 'nhiet dien', 'khi dot',
+      'xang dau', 'gia dau', 'gia xang', 'loc dau', 'dau tho', 'khi thien nhien',
+      'nha may loc dau', 'khai thac dau', 'mo dau', 'mo khi', 'quy binh on',
+      'an ninh nang luong', 'chuyen doi nang luong', 'dien khi', 'quy hoach dien',
+      // English-Vietnam terms
+      'vietnam energy', 'vietnam oil', 'vietnam gas', 'vietnam electricity',
+      'vietnam power', 'vietnam lng', 'vietnam refinery',
     ],
     exclude: [
-      'solar panel installation', 'electric vehicle review',
-      'điện thoại', 'xe điện',
+      // English
+      'cooking oil', 'olive oil', 'coconut oil', 'palm oil', 'essential oil',
+      'oil painting', 'oil change', 'solar panel installation', 'electric vehicle review',
+      'ev charger', 'data pipeline',
+      // Vietnamese (diacritics)
+      'điện thoại', 'xe điện', 'dầu ăn', 'dầu dừa', 'dầu gội', 'tinh dầu', 'điện tử',
+      // Vietnamese (ASCII)
+      'dau an', 'dau dua', 'dau goi', 'tinh dau', 'dien tu', 'dien thoai',
     ],
   },
 

@@ -9,7 +9,7 @@
     "start": "node dist/index.js",
     "db:migrate": "prisma migrate dev",
     "db:generate": "prisma generate",
-    "pipeline": "curl -s -X POST -H \"x-api-key: $PIPELINE_API_KEY\" http://localhost:8000/api/pipeline/run | node -e \"process.stdin.resume(); let d=''; process.stdin.on('data',c=>d+=c); process.stdin.on('end',()=>{const r=JSON.parse(d); console.log('Report:', r.reportKey, '| Articles:', r.articleCount)})\"",
+    "pipeline": "curl -s -X POST -H \"x-api-key: $PIPELINE_API_KEY\" http://localhost:8806/api/pipeline/run | node -e \"process.stdin.resume(); let d=''; process.stdin.on('data',c=>d+=c); process.stdin.on('end',()=>{const r=JSON.parse(d); console.log('Report:', r.reportKey, '| Articles:', r.articleCount)})\"",
     "purge": "tsx src/scripts/purge.ts"
   },
   "dependencies": {

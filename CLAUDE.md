@@ -18,8 +18,8 @@ pnpm db:migrate
 pnpm db:generate
 
 # Development
-pnpm dev:backend    # tsx watch on backend (port 8000)
-pnpm dev:frontend   # vite dev server (port 3000)
+pnpm dev:backend    # tsx watch on backend (port 8806)
+pnpm dev:frontend   # vite dev server (port 3306)
 
 # Build all packages
 pnpm build
@@ -45,7 +45,7 @@ Monorepo with two packages (`pnpm-workspace.yaml`):
 
 ### Backend
 
-Entry point: `src/index.ts` — initializes pgvector extension, creates Fastify app with CORS, registers routes, starts scheduler, listens on `0.0.0.0:8000`.
+Entry point: `src/index.ts` — initializes pgvector extension, creates Fastify app with CORS, registers routes, starts scheduler, listens on `0.0.0.0:8806`.
 
 ```
 packages/backend/src/
@@ -121,7 +121,7 @@ PostgreSQL 16 with pgvector extension. Schema in `packages/backend/prisma/schema
 All config is in `config.ts` with **Zod validation** for environment variables. See `.env.example` for required variables:
 - `OPENROUTER_API_KEY` — LLM/embedding API key
 - `DATABASE_URL` — PostgreSQL connection string (default: `postgresql://postgres:postgres@localhost:5433/newsbot`)
-- `PORT` — backend port (default: 8000)
+- `PORT` — backend port (default: 8806)
 
 Config also defines: RSS feed URLs, keyword filters, cron schedules, model names, dedup similarity threshold.
 
@@ -132,7 +132,7 @@ Three compose files:
 - `docker-compose.dev.yml` — dev override with volume mounts + hot reload
 - `docker-compose.prod.yml` — production with restart policies
 
-Both backend and frontend use **multi-stage Dockerfiles**. Frontend production serves via **nginx:alpine** on port 3000 with SPA fallback (`try_files $uri $uri/ /index.html`) and API proxy (`/api/` → `http://backend:8000`).
+Both backend and frontend use **multi-stage Dockerfiles**. Frontend production serves via **nginx:alpine** on port 3306 with SPA fallback (`try_files $uri $uri/ /index.html`) and API proxy (`/api/` → `http://backend:8806`).
 
 Postgres is exposed on **host port 5433** (maps to container 5432).
 

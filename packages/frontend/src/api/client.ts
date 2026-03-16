@@ -191,6 +191,23 @@ export async function fetchVisitData(days: number = 7): Promise<VisitData> {
   return res.json();
 }
 
+export interface UniqueIpEntry {
+  ip: string;
+  count: number;
+  lastSeen: string;
+  lastUserAgent: string | null;
+}
+
+export interface UniqueIpsData {
+  ips: UniqueIpEntry[];
+  total: number;
+}
+
+export async function fetchUniqueIps(days: number = 1, limit: number = 50): Promise<UniqueIpsData> {
+  const res = await apiFetch(`${BASE_URL}/admin/visits/ips?days=${days}&limit=${limit}`);
+  return res.json();
+}
+
 export async function fetchPipelineLogs(limit: number = 50): Promise<PipelineLogEntry[]> {
   const res = await apiFetch(`${BASE_URL}/admin/pipeline-logs?limit=${limit}`);
   return res.json();

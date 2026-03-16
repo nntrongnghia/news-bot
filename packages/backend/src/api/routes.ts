@@ -345,6 +345,47 @@ export async function registerRoutes(app: FastifyInstance) {
     }
   );
 
+  // Admin: unique IPs list
+  app.get<{ Querystring: { days?: string; limit?: string } }>(
+    '/api/admin/visits/ips',
+    async (req, reply) => {
+      if (!(await requireAdmin(req))) {
+        return reply.status(403).send({ error: 'Forbidden' });
+      }
+
+      const days = Math.min(parseInt(req.query.days || '1', 10) || 1, 90);
+      const limit = Math.min(parseInt(req.query.limit || '50', 10) || 50, 200);
+      const since = new Date();
+      since.setDate(since.getDate() - days);
+
+      const ips = await prisma.$queryRaw<{ ip: string; count: bigint; lastSeen: Date; lastUserAgent: string | null }[]>`
+        SELECT ip, COUNT(*) as count,
+               MAX("createdAt") as "lastSeen",
+               (ARRAY_AGG("userAgent" ORDER BY "createdAt" DESC))[1] as "lastUserAgent"
+        FROM page_views
+        WHERE ip IS NOT NULL AND "createdAt" >= ${since}
+        GROUP BY ip
+        ORDER BY count DESC
+        LIMIT ${limit}
+      `;
+
+      const total = await prisma.$queryRaw<[{ count: bigint }]>`
+        SELECT COUNT(DISTINCT ip) as count FROM page_views
+        WHERE ip IS NOT NULL AND "createdAt" >= ${since}
+      `;
+
+      return {
+        ips: ips.map(r => ({
+          ip: r.ip,
+          count: Number(r.count),
+          lastSeen: r.lastSeen instanceof Date ? r.lastSeen.toISOString() : String(r.lastSeen),
+          lastUserAgent: r.lastUserAgent,
+        })),
+        total: Number(total[0]?.count ?? 0),
+      };
+    }
+  );
+
   // Admin: pipeline logs
   app.get<{ Querystring: { limit?: string } }>(
     '/api/admin/pipeline-logs',
